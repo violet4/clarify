@@ -1,4 +1,6 @@
 # clarify
-A todo app using GTD methodologies and the Eisenhower Priority Matrix to help you focus on high-importance goals and break them down into completable tasks
+A todo app using GTD methodologies ([wikipedia](https://en.wikipedia.org/wiki/Getting_Things_Done)) and the Eisenhower Priority Matrix ([wikipedia](https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method)) to help you focus on high-importance goals and break them down into completable tasks
 
 Implemented in Elm (http://elm-lang.org/)
+
+Project instructions at http://horstmann.com/sjsu/spring2018/cs152/project/index.html
