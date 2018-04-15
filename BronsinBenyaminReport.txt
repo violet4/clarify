@@ -1,8 +1,0 @@
-Week 1
-======
-4/11/2018 12:00-12:30: Decided which platform we'll use for our project
-4/14/2018 1:00-3:00: Learn about elm
-
-Comments: 
-Total hours this week: 120 hours
-Total hours on project: 2 hours and 30 minutes
