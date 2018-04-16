@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Todo app to focus on high-importance goals, break them into completable tasks",
-    "repository": "https://github.com/user/project.git",
+    "repository": "https://github.com/mica5/clarify.git",
     "license": "BSD3",
     "source-directories": [
         "."
