@@ -5,8 +5,9 @@ Implemented in Elm (http://elm-lang.org/)
 
 Project instructions at http://horstmann.com/sjsu/spring2018/cs152/project/index.html
 
-Run the project:  
-# cd into this directory
-elm-reactor
-# copy the link it prints into a browser window
-# navigate to src/App.elm
+## Run the project:  
+
+    # cd into this directory
+    elm-reactor
+    # copy the link it prints into a browser window
+    # navigate to src/App.elm
