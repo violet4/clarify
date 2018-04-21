@@ -5,6 +5,11 @@ Implemented in Elm (http://elm-lang.org/)
 
 Project instructions at http://horstmann.com/sjsu/spring2018/cs152/project/index.html
 
+## Install:
+
+Install elm for your platform from https://guide.elm-lang.org/install.html  
+Clone this repository
+
 ## Run the project:  
 
     # cd into this directory
