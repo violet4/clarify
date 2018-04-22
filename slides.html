@@ -1,0 +1,38 @@
+<html><head>
+	<script src="src/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+	slidenum = 0;
+	$(document).ready(function () {
+		$(".slide").hide();
+		$(".slide").first().show();
+		$(".slide").each(function(key, value) {
+			value.innerHtml = $("#header").html() + value.innerHtml;
+		});
+	})
+	next = function() {
+		slidenum += 1;
+		$(".slide").hide();
+		$($(".slide")[slidenum]).show();
+	}
+	previous = function() {
+		slidenum -= 1;
+		$(".slide").hide();
+		$($(".slide")[slidenum]).show();
+	}
+	function slide(event) {
+		var char = event.which || event.keyCode;
+		if (char == 37) previous()
+		else if (char == 39) next();
+	}
+	</script>
+</head><body onkeypress="slide(event);">
+<div id="header">
+	this is the header
+</div>
+<div class="slide">
+	slide 1
+</div>
+<div class="slide">
+	slide 2
+</div>
+</body></html>
