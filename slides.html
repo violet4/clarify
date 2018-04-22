@@ -11,11 +11,14 @@
 	})
 	next = function() {
 		slidenum += 1;
+		var num_slides = $(".slide").length;
+		if (slidenum >= num_slides) slidenum = num_slides - 1;
 		$(".slide").hide();
 		$($(".slide")[slidenum]).show();
 	}
 	previous = function() {
 		slidenum -= 1;
+		if (slidenum < 0) slidenum = 0;
 		$(".slide").hide();
 		$($(".slide")[slidenum]).show();
 	}
