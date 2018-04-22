@@ -1,41 +1,130 @@
 <html><head>
-	<script src="src/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript">
-	slidenum = 0;
-	$(document).ready(function () {
-		$(".slide").hide();
-		$(".slide").first().show();
-		$(".slide").each(function(key, value) {
-			value.innerHtml = $("#header").html() + value.innerHtml;
-		});
-	})
-	next = function() {
-		slidenum += 1;
-		var num_slides = $(".slide").length;
-		if (slidenum >= num_slides) slidenum = num_slides - 1;
-		$(".slide").hide();
-		$($(".slide")[slidenum]).show();
-	}
-	previous = function() {
-		slidenum -= 1;
-		if (slidenum < 0) slidenum = 0;
-		$(".slide").hide();
-		$($(".slide")[slidenum]).show();
-	}
-	function slide(event) {
-		var char = event.which || event.keyCode;
-		if (char == 37) previous()
-		else if (char == 39) next();
-	}
-	</script>
+    <script src="src/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <script type="text/javascript">
+    var slidenum = 0;
+    $(document).ready(function () {
+        $(".slide").hide();
+        slidenum = document.location.hash;
+        if (slidenum == "") slidenum = 0
+        else {
+            slidenum = parseInt(document.location.hash.split("#")[1]);
+        }
+        $($(".slide")[slidenum]).show();
+    })
+    next = function() {
+        slidenum += 1;
+        var num_slides = $(".slide").length;
+        if (slidenum >= num_slides) slidenum = num_slides - 1;
+        $(".slide").hide();
+        $($(".slide")[slidenum]).show();
+    }
+    previous = function() {
+        slidenum -= 1;
+        if (slidenum < 0) slidenum = 0;
+        $(".slide").hide();
+        $($(".slide")[slidenum]).show();
+    }
+    function slide(event) {
+        var char = event.which || event.keyCode;
+        if (char == 37) previous()
+        else if (char == 39) next();
+        document.location.hash = "#" + slidenum;
+    }
+    </script>
+    <style type="text/css">
+    .slide {
+        padding-right:15%;
+        padding-left:5%;
+        font-size:28px;
+    }
+    .slide .prettyprint {font-size: 20px;}
+    </style>
 </head><body onkeypress="slide(event);">
-<div id="header">
-	this is the header
+<div id="header" style="width: 100%; text-align:center">
+    <h1 style="color:#1D417D; font-size:50px">
+        Clarify
+    </font>
 </div>
 <div class="slide">
-	slide 1
+    <ul>
+        <li> A todo app using GTD methodologies and the Eisenhower Priority Matrix to help you focus on high-importance goals and break them down into completable tasks</li>
+        <li>Implemented in Elm</li>
+    </ul>
 </div>
 <div class="slide">
-	slide 2
+    Forms:
+<pre class="prettyprint">
+form [onSubmit CreateLifeGoal] [
+    input [
+        onInput UpdateCreateLifeGoalRegister
+    ] [],
+    button [type_ "submit"] [text "Create"]
+]</pre>
+<pre class="prettyprint">
+type Msg =
+    -- simple states
+    TodayState
+    ...
+    -- action states
+    | CreateLifeGoal
+    ...
+</pre>
+<pre class="prettyprint">
+update msg model =
+    case msg of
+        -- every time user enters a character,
+        -- we update the model
+        UpdateCreateLifeGoalRegister in_text -> {
+            model |
+            new_life_goal_title = in_text
+        }
+        -- when user submits the form, we turn the
+        -- current in-progress input and turn
+        -- it into an actual life goal
+        CreateLifeGoal -> {
+            model |
+            life_goals = (
+                List.append
+                    model.life_goals
+                    [
+                        LifeGoal
+                            model.new_life_goal_title
+                            []
+                            model.lgid
+                    ]
+            ),
+            lgid = model.lgid + 1,
+            new_life_goal_title = ""
+        }
+        ...
+</pre>
 </div>
 </body></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
