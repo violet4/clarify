@@ -1,5 +1,6 @@
-import Html exposing (div, text, Html, a)
-import Html.Attributes exposing (href)
+import Html exposing (div, text, Html, a, br)
+import Html.Attributes exposing (href, style, align)
+import Html.Events exposing (onClick)
 
 main = Html.beginnerProgram {
     model=model,
@@ -31,8 +32,40 @@ type alias LifeGoal = {
     }
 type alias Model = {
     life_goals: List LifeGoal,
-    today: Today
+    today: Today,
+    state: State
     }
+
+type State =
+    TodayState
+    | Tasks
+    | LifeGoals
+    | Create
+    | CreateTask
+    | CreateLifeGoal
+
+fullSizeStyle = style [("width", "100%"), ("height", "75%")]
+
+todayView model = div [fullSizeStyle] [text "todayView"]
+tasksView model = div [fullSizeStyle] [text "tasksView"]
+lifeGoalsView model = div [fullSizeStyle] [text "lifeGoalsView"]
+
+
+createView model = div [fullSizeStyle] [
+        text "createView",
+        br [] [],
+        a [
+            (href "#"),
+            (onClick CreateTask)
+        ] [text "Create Task"],
+        br [] [],
+        a [
+            (href "#"),
+            (onClick CreateLifeGoal)
+        ] [text "Create Life Goal"]
+    ]
+createTaskView model = div [fullSizeStyle] [text "createTaskView"]
+createLifeGoalView model = div [fullSizeStyle] [text "createLifeGoalView"]
 
 model: Model
 --model = Model [] (Today [])
@@ -57,7 +90,7 @@ model = Model [
             }
         ]
     ]
-    ] (Today [])
+    ] (Today []) TodayState
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.
@@ -75,14 +108,21 @@ type Msg =
     Increment
     | Decrement
 
--- can't make any updates yet. just ignore any
--- message and return the model we're given
-update msg model = model
+-- update the current state, which we use
+-- to decide which view to display
+update msg model =
+    {model | state = msg}
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }
 -- we need a "msg" that enumerates the actions we could take at this step,
 -- (i.e. create a corresponding version of "type Msg = Increment |
 -- Decrement")
+
+header = div [style [
+        ("color", "#1D417D"),
+        ("font-size", "28px"),
+        ("text-align", "center")
+    ]] [text "Clarify"]
 
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
@@ -92,13 +132,37 @@ navigation = div [] [
         a [
             -- these links don't take us anywhere yet,
             -- but at least we can click them.
-            (href "#")
-        ] [text "priorities"],
+            (href "#"),
+            (onClick TodayState)
+        ] [text "Today"],
         -- put some spacing between the links
         text " ",
         a [
-            (href "#")
-        ] [text "tasks"]
+            (href "#"),
+            (onClick Tasks)
+        ] [text "Tasks"],
+        text " ",
+        a [
+            (href "#"),
+            (onClick LifeGoals)
+        ] [text "Life Goals"]
+    ]
+
+currentView model =
+    case model.state of
+        TodayState -> todayView model
+        Tasks -> tasksView model
+        LifeGoals -> lifeGoalsView model
+        Create -> createView model
+        CreateTask -> createTaskView model
+        CreateLifeGoal -> createLifeGoalView model
+
+createButton = div [(align "right")] [
+        a [
+            (href "#"),
+            (onClick Create),
+            (style [("margin-right", "25px")])
+        ] [text "Create"]
     ]
 
 -- we need to create a state that holds the current state -
@@ -107,10 +171,16 @@ navigation = div [] [
 -- = Increment | Decrement") depending on the state we're
 -- in, we need to show the model in a way that is useful,
 -- with interactivity.
-view: Model -> Html msg
+--view: Model -> Html State
 view model =
-    div [] [
-        text (toString model),
-        navigation
+    div [style [
+        ("width", "100%"),
+        ("height", "100%")
+    ]] [
+        createButton,
+        header,
+        navigation,
+--        text (toString model),
+        currentView model
     ]
 
