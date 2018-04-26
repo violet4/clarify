@@ -124,27 +124,33 @@ header = div [style [
         ("text-align", "center")
     ]] [text "Clarify"]
 
+red = style [("color", "red")]
+normal = style []
+
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
-navigation = div [] [
+navigation model = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
         a [
             -- these links don't take us anywhere yet,
             -- but at least we can click them.
             (href "#"),
-            (onClick TodayState)
+            (onClick TodayState),
+            if model.state == TodayState then red else normal
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
         a [
             (href "#"),
-            (onClick Tasks)
+            (onClick Tasks),
+            if model.state == Tasks then red else normal
         ] [text "Tasks"],
         text " ",
         a [
             (href "#"),
-            (onClick LifeGoals)
+            (onClick LifeGoals),
+            if model.state == LifeGoals then red else normal
         ] [text "Life Goals"]
     ]
 
@@ -179,7 +185,7 @@ view model =
     ]] [
         createButton,
         header,
-        navigation,
+        navigation model,
 --        text (toString model),
         currentView model
     ]
