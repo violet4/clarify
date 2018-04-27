@@ -1,6 +1,6 @@
-import Html exposing (div, text, Html, a, br)
-import Html.Attributes exposing (href, style, align)
-import Html.Events exposing (onClick)
+import Html exposing (div, text, Html, a, br, span, hr, button, input, form)
+import Html.Attributes exposing (href, style, align, id, type_)
+import Html.Events exposing (onClick, onSubmit, onInput)
 
 main = Html.beginnerProgram {
     model=model,
@@ -11,44 +11,114 @@ main = Html.beginnerProgram {
 -- types:
 -- LifeGoal, Priority, Task, Subtask
 
--- should a Task be recursive in that it can have one, two, or any number of tasks?
--- if a task can only have one subtask, then the user can't split up a task into multiple subtasks and save that for later, which sounds restrictive, and also could increase mental burden if the user can't get their ideas out of their head into the app. I think a task should have any number of subtasks, so each subtask can be recursively broken down until it meets the rule "less than 5 minutes or can't be broken down any further".
 
-type Task = Task {
+type alias Task = {
     title: String
-    , tasks: List Task
     , complete: Bool
+    , id: Int
     }
 type alias Today = {
     tasks: List Task
     }
 type alias Priority = {
     title: String,
-    tasks: List Task
+    tasks: List Task,
+    id: Int
     }
 type alias LifeGoal = {
     title: String,
-    priorities: List Priority
+    priorities: List Priority,
+    id: Int
     }
 type alias Model = {
     life_goals: List LifeGoal,
     today: Today,
-    state: State
+    tasks: List Task,
+    state: Msg,
+    debug: String,
+    lifeGoalID: Int,
+    taskID: Int,
+    new_life_goal_title: String,
+    new_task_title: String
     }
 
-type State =
+type Msg =
+    -- simple states
     TodayState
-    | Tasks
-    | LifeGoals
-    | Create
-    | CreateTask
+    | CreateState
+    | TaskState
+    | LifeGoalState
+    -- action states
     | CreateLifeGoal
+    | CreateTask
+    | UpdateCreateLifeGoalRegister String
+    | UpdateTaskRegister String
+    | LifeGoalsState
+    | DeleteLifeGoal Int
+
+currentView model =
+    case model.state of
+        -- each of these takes a model
+        TodayState -> todayView model
+        TaskState -> taskView model
+        LifeGoalsState -> lifeGoalsView model
+        CreateState -> createView model
+        LifeGoalState -> lifeGoalsView model
+        DeleteLifeGoal id -> lifeGoalsView model
+        _ -> todayView model
+
+tasksToHtmlList tasks =
+    List.map (\x -> [text x.title, br [] []]) tasks
+
+-- tasks view shows all tasks
+taskView model =
+    div [fullSizeStyle]
+        (List.append
+            (List.concat
+            (tasksToHtmlList model.tasks))
+            [
+                br [] [],
+                --text "TaskState",
+                form [onSubmit CreateTask] [
+                    input [
+                        onInput UpdateTaskRegister
+                    ] [],
+                    button [type_ "submit"] [text "Create"]
+                ]
+            ]
+    )
+
 
 fullSizeStyle = style [("width", "100%"), ("height", "75%")]
 
-todayView model = div [fullSizeStyle] [text "todayView"]
-tasksView model = div [fullSizeStyle] [text "tasksView"]
-lifeGoalsView model = div [fullSizeStyle] [text "lifeGoalsView"]
+-- today view shows tasks we chose for today
+todayView: Model -> Html Msg
+todayView model = div [fullSizeStyle]
+    (List.map (\x -> text x.title) model.today.tasks)
+
+
+
+width100 = style [("width", "100%")]
+
+lifeGoalElement: LifeGoal -> Html Msg
+lifeGoalElement lifeGoal =
+    div [width100] [
+        text lifeGoal.title,
+        text " ",
+        button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
+    ]
+
+lifeGoalsView: Model -> Html Msg
+lifeGoalsView model = div [fullSizeStyle]
+    (List.append
+         (List.map lifeGoalElement model.life_goals)
+         [form [onSubmit CreateLifeGoal] [
+              input [
+                  onInput UpdateCreateLifeGoalRegister
+              ] [],
+              button [type_ "submit"] [text "Create"]
+           ]]
+     )
 
 
 createView model = div [fullSizeStyle] [
@@ -56,41 +126,18 @@ createView model = div [fullSizeStyle] [
         br [] [],
         a [
             (href "#"),
-            (onClick CreateTask)
+            (onClick TaskState)
         ] [text "Create Task"],
         br [] [],
         a [
             (href "#"),
-            (onClick CreateLifeGoal)
+            (onClick LifeGoalState)
         ] [text "Create Life Goal"]
     ]
-createTaskView model = div [fullSizeStyle] [text "createTaskView"]
-createLifeGoalView model = div [fullSizeStyle] [text "createLifeGoalView"]
 
 model: Model
 --model = Model [] (Today [])
-model = Model [
-    LifeGoal "cleanliness" [
-        Priority "keep room clean" [
-            Task {
-                title="clean bookshelf",
-                tasks=[
-                    Task {
-                        title="clean top shelf",
-                        tasks=[],
-                        complete=False
-                    },
-                    Task {
-                        title="clean 2nd shelf",
-                        tasks=[],
-                        complete=False
-                    }
-                ],
-                complete=False
-            }
-        ]
-    ]
-    ] (Today []) TodayState
+model = Model [] (Today []) [(Task "clean desk" False 0)] TodayState "" 0 0 "" ""
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.
@@ -101,35 +148,66 @@ last list =
         [last] -> Just last
         h::t -> last t
 
--- we don't need this, but it's demonstrative of something
--- that we will need - keeping current state of the app
--- and/or what state user asked to navigate to
-type Msg =
-    Increment
-    | Decrement
 
 -- update the current state, which we use
--- to decide which view to display
+-- to decide which view to display.
+-- here we will also need to use "msg" to be able to
+-- add/delete life goals/priorities/tasks
 update msg model =
-    {model | state = msg}
+    case msg of
+--        TodayState
+--        CreateState
+--        -- action states
+--        LifeGoalsState
+        UpdateCreateLifeGoalRegister in_text -> {
+            model |
+            new_life_goal_title = in_text,
+            debug = toString msg
+            }
+        CreateLifeGoal -> {
+            model |
+            life_goals = (List.append model.life_goals [LifeGoal model.new_life_goal_title [] model.lifeGoalID]),
+            lifeGoalID = model.lifeGoalID + 1,
+            new_life_goal_title = "",
+            debug = toString msg
+            }
+        UpdateTaskRegister in_text -> {
+            model |
+            new_task_title = in_text,
+            debug = toString msg
+            }
+        CreateTask -> {
+            model |
+            tasks = List.append model.tasks [(Task model.new_task_title False model.taskID)],
+            taskID = model.taskID + 1,
+            new_task_title = "",
+            debug = toString msg
+            }
+        DeleteLifeGoal id -> {
+            model |
+            state = msg,
+            debug = toString msg,
+            life_goals = List.filter (\lg -> lg.id /= id) model.life_goals
+            }
+        _ -> {model | state = msg, debug = toString msg}
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }
 -- we need a "msg" that enumerates the actions we could take at this step,
 -- (i.e. create a corresponding version of "type Msg = Increment |
 -- Decrement")
 
-header = div [style [
+htmlAppHeader = div [style [
         ("color", "#1D417D"),
         ("font-size", "28px"),
-        ("text-align", "center")
+        ("padding-left", "40%")
     ]] [text "Clarify"]
 
 red = style [("color", "red")]
-normal = style []
+noStyle = style []
 
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
-navigation model = div [] [
+htmlNavigationBar model = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
         a [
@@ -137,39 +215,50 @@ navigation model = div [] [
             -- but at least we can click them.
             (href "#"),
             (onClick TodayState),
-            if model.state == TodayState then red else normal
+            (if model.state == TodayState then red else noStyle)
+        ] [text "Today"],
+        -- put some spacing between the links
+        text " ",
+        todayLinkButton model,
+        text " ",
+        lifeGoalsLinkButton model
+    ]
+
+lifeGoalsLinkButton model =
+    a [
+        (href "#"),
+        (onClick LifeGoalsState),
+        (if model.state == LifeGoalsState then red else noStyle)
+    ] [text "Life Goals"]
+
+todayLinkButton model =
+    a [
+        (href "#"),
+        (onClick TaskState),
+        (if model.state == TaskState then red else noStyle)
+    ] [text "Tasks"]
+
+
+mainViewHtmlNavigationBar = div [] [
+        -- these links need to be attached to onClick events,
+        -- or something of the like
+        a [
+            -- these links don't take us anywhere yet,
+            -- but at least we can click them.
+            (href "#"),
+            (onClick TodayState)
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
         a [
-            (href "#"),
-            (onClick Tasks),
-            if model.state == Tasks then red else normal
-        ] [text "Tasks"],
-        text " ",
-        a [
-            (href "#"),
-            (onClick LifeGoals),
-            if model.state == LifeGoals then red else normal
+            (href "#")
+--            ,
+--            (onClick LifeGoalsState)
         ] [text "Life Goals"]
     ]
 
-currentView model =
-    case model.state of
-        TodayState -> todayView model
-        Tasks -> tasksView model
-        LifeGoals -> lifeGoalsView model
-        Create -> createView model
-        CreateTask -> createTaskView model
-        CreateLifeGoal -> createLifeGoalView model
 
-createButton = div [(align "right")] [
-        a [
-            (href "#"),
-            (onClick Create),
-            (style [("margin-right", "25px")])
-        ] [text "Create"]
-    ]
+
 
 -- we need to create a state that holds the current state -
 -- are we looking at life goals, priorities, tasks, or
@@ -177,16 +266,18 @@ createButton = div [(align "right")] [
 -- = Increment | Decrement") depending on the state we're
 -- in, we need to show the model in a way that is useful,
 -- with interactivity.
---view: Model -> Html State
+view: Model -> Html Msg
 view model =
     div [style [
         ("width", "100%"),
         ("height", "100%")
     ]] [
-        createButton,
-        header,
-        navigation model,
---        text (toString model),
+        text (toString model.debug),
+        htmlAppHeader,
+        htmlNavigationBar model,
+        hr [] [],
+        text (toString model),
+        hr [] [],
         currentView model
     ]
 
