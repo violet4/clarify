@@ -1,4 +1,7 @@
-import Html exposing (div, text, Html, a, br, span, hr, button, input, form)
+import Html exposing (
+    div, text, Html, a, br, span, hr, button, input, form,
+    select, option
+    )
 import Html.Attributes exposing (href, style, align, id, type_)
 import Html.Events exposing (onClick, onSubmit, onInput)
 
@@ -15,7 +18,7 @@ main = Html.beginnerProgram {
 type alias Task = {
     title: String
     , complete: Bool
-    , id: Int
+    , taskID: Int
     }
 type alias Today = {
     tasks: List Task
@@ -67,15 +70,29 @@ currentView model =
         DeleteLifeGoal id -> lifeGoalsView model
         _ -> todayView model
 
-tasksToHtmlList tasks =
-    List.map (\x -> [text x.title, br [] []]) tasks
+taskLifeGoalSelector model taskID =
+    select [] (
+        List.map
+        -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
+        (\lifeGoal -> (option [] [text lifeGoal.title]))
+        model.life_goals
+    )
+
+tasksToHtmlList model =
+    List.map (\task -> [
+        text (task.title ++ " "),
+        -- ability to select a life goal for this task
+        -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
+        taskLifeGoalSelector model task.taskID,
+        br [] []
+    ]) model.tasks
 
 -- tasks view shows all tasks
 taskView model =
     div [fullSizeStyle]
         (List.append
             (List.concat
-            (tasksToHtmlList model.tasks))
+            (tasksToHtmlList model))
             [
                 br [] [],
                 --text "TaskState",
@@ -137,7 +154,10 @@ createView model = div [fullSizeStyle] [
 
 model: Model
 --model = Model [] (Today [])
-model = Model [] (Today []) [(Task "clean desk" False 0)] TodayState "" 0 0 "" ""
+model = Model [
+        LifeGoal "cleanliness" [] 0,
+        LifeGoal "education" [] 1
+    ] (Today []) [(Task "clean desk" False 0)] TodayState "" 2 0 "" ""
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.
@@ -187,7 +207,7 @@ update msg model =
             model |
             state = msg,
             debug = toString msg,
-            life_goals = List.filter (\lg -> lg.id /= id) model.life_goals
+            life_goals = List.filter (\lifeGoal -> lifeGoal.id /= id) model.life_goals
             }
         _ -> {model | state = msg, debug = toString msg}
 -- but this is how we update our model with a new life goal called "cleanliness":
