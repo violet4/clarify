@@ -14,10 +14,10 @@ main = Html.beginnerProgram {
 -- types:
 -- LifeGoal, Priority, Task, Subtask
 
-
 type alias Task = {
     title: String
     , complete: Bool
+    , estimatedMinutes: Int
     , taskID: Int
     }
 type alias Today = {
@@ -105,7 +105,6 @@ taskView model =
             ]
     )
 
-
 fullSizeStyle = style [("width", "100%"), ("height", "75%")]
 
 -- today view shows tasks we chose for today
@@ -152,12 +151,33 @@ createView model = div [fullSizeStyle] [
         ] [text "Create Life Goal"]
     ]
 
+
+-- default model
 model: Model
 --model = Model [] (Today [])
-model = Model [
+model = Model
+    -- life_goals
+    [
         LifeGoal "cleanliness" [] 0,
         LifeGoal "education" [] 1
-    ] (Today []) [(Task "clean desk" False 0)] TodayState "" 2 0 "" ""
+    ]
+    -- today: Today
+    (Today [])
+    -- tasks
+    [
+        (Task "clean desk" False 0 0),
+         Task
+             "vacuum room" -- title
+             False -- complete
+             0 -- estimatedMinutes
+             1 -- taskID
+    ]
+    TodayState -- state
+    "" -- debug
+    2 -- lifeGoalID
+    0 -- taskID
+    "" -- new_life_goal_title
+    "" -- new_task_title
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.
@@ -167,7 +187,6 @@ last list =
         [] -> Nothing
         [last] -> Just last
         h::t -> last t
-
 
 -- update the current state, which we use
 -- to decide which view to display.
@@ -198,11 +217,12 @@ update msg model =
             }
         CreateTask -> {
             model |
-            tasks = List.append model.tasks [(Task model.new_task_title False model.taskID)],
+            tasks = List.append model.tasks [(Task model.new_task_title False 0 model.taskID)],
             taskID = model.taskID + 1,
             new_task_title = "",
             debug = toString msg
             }
+        -- TODO if user deletes all life goals, what should we do to the tasks marked as that life goal?
         DeleteLifeGoal id -> {
             model |
             state = msg,
