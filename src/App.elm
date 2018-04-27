@@ -35,7 +35,9 @@ model = Model
              0 -- estimatedMinutes
              1 -- taskID
     ]
-    TodayState -- state
+    -- starting state
+--    TodayState
+    TaskState
     "" -- debug
     2 -- lifeGoalID
     0 -- taskID

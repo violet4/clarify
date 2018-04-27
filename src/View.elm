@@ -4,7 +4,7 @@ import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option
     )
-import Html.Attributes exposing (href, style, align, id, type_)
+import Html.Attributes exposing (href, style, align, id, type_, value)
 import Html.Events exposing (onClick, onSubmit, onInput)
 
 import Msg exposing (..)
@@ -47,7 +47,8 @@ tasksToHtmlList model =
         text (task.title ++ " "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
-        taskLifeGoalSelector model task.taskID,
+        (taskLifeGoalSelector model task.taskID),
+        input [type_ "number", value "0"] [],
         br [] []
     ]) model.tasks
 
@@ -69,14 +70,10 @@ taskView model =
             ]
     )
 
-
 -- today view shows tasks we chose for today
 todayView: Model -> Html Msg
 todayView model = div [fullSizeStyle]
     (List.map (\x -> text x.title) model.today.tasks)
-
-
-
 
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
