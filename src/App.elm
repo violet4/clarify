@@ -1,10 +1,5 @@
 
-import Html exposing (
-    div, text, Html, a, br, span, hr, button, input, form,
-    select, option
-    )
-import Html.Attributes exposing (href, style, align, id, type_)
-import Html.Events exposing (onClick, onSubmit, onInput)
+import Html exposing (Html)
 
 import Model exposing (..)
 import Msg exposing (..)

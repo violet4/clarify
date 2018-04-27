@@ -1,7 +1,7 @@
 module View exposing (view)
 
 import Html exposing (
-    div, text, Html, a, br, span, hr, button, input, form,
+    div, text, Html, a, br, hr, button, input, form,
     select, option
     )
 import Html.Attributes exposing (href, style, align, id, type_)
@@ -11,6 +11,17 @@ import Msg exposing (..)
 import Model exposing (..)
 
 
+-- styles
+fullSizeStyle = style [("width", "100%"), ("height", "75%")]
+width100p = style [("width", "100%")]
+htmlAppHeader = div [style [
+        ("color", "#1D417D"),
+        ("font-size", "28px"),
+        ("padding-left", "40%")
+    ]] [text "Clarify"]
+
+redFont = style [("color", "red")]
+noStyle = style []
 
 currentView model =
     case model.state of
@@ -58,7 +69,6 @@ taskView model =
             ]
     )
 
-fullSizeStyle = style [("width", "100%"), ("height", "75%")]
 
 -- today view shows tasks we chose for today
 todayView: Model -> Html Msg
@@ -67,11 +77,10 @@ todayView model = div [fullSizeStyle]
 
 
 
-width100 = style [("width", "100%")]
 
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
-    div [width100] [
+    div [width100p] [
         text lifeGoal.title,
         text " ",
         button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
@@ -104,14 +113,6 @@ createView model = div [fullSizeStyle] [
         ] [text "Create Life Goal"]
     ]
 
-htmlAppHeader = div [style [
-        ("color", "#1D417D"),
-        ("font-size", "28px"),
-        ("padding-left", "40%")
-    ]] [text "Clarify"]
-
-red = style [("color", "red")]
-noStyle = style []
 
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
@@ -123,7 +124,7 @@ htmlNavigationBar model = div [] [
             -- but at least we can click them.
             (href "#"),
             (onClick TodayState),
-            (if model.state == TodayState then red else noStyle)
+            (if model.state == TodayState then redFont else noStyle)
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
@@ -136,14 +137,14 @@ lifeGoalsLinkButton model =
     a [
         (href "#"),
         (onClick LifeGoalsState),
-        (if model.state == LifeGoalsState then red else noStyle)
+        (if model.state == LifeGoalsState then redFont else noStyle)
     ] [text "Life Goals"]
 
 todayLinkButton model =
     a [
         (href "#"),
         (onClick TaskState),
-        (if model.state == TaskState then red else noStyle)
+        (if model.state == TaskState then redFont else noStyle)
     ] [text "Tasks"]
 
 
@@ -165,9 +166,6 @@ mainViewHtmlNavigationBar = div [] [
         ] [text "Life Goals"]
     ]
 
-
-
-
 -- we need to create a state that holds the current state -
 -- are we looking at life goals, priorities, tasks, or
 -- today? (i.e. create a corresponding version of "type Msg
@@ -176,10 +174,7 @@ mainViewHtmlNavigationBar = div [] [
 -- with interactivity.
 view: Model -> Html Msg
 view model =
-    div [style [
-        ("width", "100%"),
-        ("height", "100%")
-    ]] [
+    div [fullSizeStyle] [
         text (toString model.debug),
         htmlAppHeader,
         htmlNavigationBar model,
