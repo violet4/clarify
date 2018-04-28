@@ -8,6 +8,8 @@ type Msg =
     | LifeGoalState
     -- action states
     | CreateLifeGoal
+    | CreateLifeGoalState
+    | CreateTaskState
     | CreateTask
     | UpdateCreateLifeGoalRegister String
     | UpdateTaskEstimatedMinutes (Int, String)

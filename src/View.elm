@@ -31,6 +31,8 @@ currentView model =
         LifeGoalsState -> lifeGoalsView model
         CreateState -> createView model
         LifeGoalState -> lifeGoalsView model
+        CreateLifeGoalState -> createLifeGoalView model
+        CreateTaskState -> createTaskView model
         DeleteLifeGoal id -> lifeGoalsView model
         _ -> todayView model
 
@@ -62,19 +64,7 @@ tasksToHtmlList model =
 -- tasks view shows all tasks
 taskView model =
     div [fullSizeStyle]
-        (List.append
             (List.concat (tasksToHtmlList model))
-                [
-                    br [] [],
-                    --text "TaskState",
-                    form [onSubmit CreateTask] [
-                        input [
-                            onInput UpdateTaskRegister
-                        ] [],
-                        button [type_ "submit"] [text "Create"]
-                    ]
-                ]
-    )
 
 -- today view shows tasks we chose for today
 todayView: Model -> Html Msg
@@ -91,28 +81,42 @@ lifeGoalElement lifeGoal =
 
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
-    (List.append
          (List.map lifeGoalElement model.life_goals)
+
+createLifeGoalView: Model -> Html Msg
+createLifeGoalView model = div [fullSizeStyle]
          [form [onSubmit CreateLifeGoal] [
               input [
                   onInput UpdateCreateLifeGoalRegister
               ] [],
               button [type_ "submit"] [text "Create"]
            ]]
-     )
+
+createTaskView: Model -> Html Msg
+createTaskView model = div [fullSizeStyle] 
+         [
+                    br [] [],
+                    --text "TaskState",
+                    form [onSubmit CreateTask] [
+                        input [
+                            onInput UpdateTaskRegister
+                        ] [],
+                        button [type_ "submit"] [text "Create"]
+                    ]
+                ]
 
 
 createView model = div [fullSizeStyle] [
-        text "createView",
+        text "Create a Task or Life Goal",
         br [] [],
         a [
             (href "#"),
-            (onClick TaskState)
+            (onClick CreateTaskState)
         ] [text "Create Task"],
         br [] [],
         a [
             (href "#"),
-            (onClick LifeGoalState)
+            (onClick CreateLifeGoalState)
         ] [text "Create Life Goal"]
     ]
 
@@ -133,7 +137,9 @@ htmlNavigationBar model = div [] [
         text " ",
         todayLinkButton model,
         text " ",
-        lifeGoalsLinkButton model
+        lifeGoalsLinkButton model,
+        text " ",
+        createViewButton model
     ]
 
 lifeGoalsLinkButton model =
@@ -149,6 +155,13 @@ todayLinkButton model =
         (onClick TaskState),
         (if model.state == TaskState then redFont else noStyle)
     ] [text "Tasks"]
+
+createViewButton model =
+    a [
+        (href "#"),
+        (onClick CreateState),
+        (if model.state == CreateState then redFont else noStyle)
+    ] [text "Create"]
 
 
 mainViewHtmlNavigationBar = div [] [
