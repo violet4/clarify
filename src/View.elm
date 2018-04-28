@@ -84,11 +84,15 @@ lifeGoalsView model = div [fullSizeStyle]
          (List.map lifeGoalElement model.life_goals)
 
 createLifeGoalView: Model -> Html Msg
-createLifeGoalView model = div [fullSizeStyle]
-         [form [onSubmit CreateLifeGoal] [
-              input [
+createLifeGoalView model = div [fullSizeStyle][
+            br [] [],
+            
+            form [onSubmit CreateLifeGoal] [
+                text "Description: ",
+                input [
                   onInput UpdateCreateLifeGoalRegister
               ] [],
+              br [] [],
               button [type_ "submit"] [text "Create"]
            ]]
 
@@ -97,13 +101,25 @@ createTaskView model = div [fullSizeStyle]
          [
                     br [] [],
                     --text "TaskState",
+                    text "Life Goal: ",
+                    lifeGoalSelector model.life_goals,
+                    br [] [], 
+                    br [] [],                 
                     form [onSubmit CreateTask] [
+                        text "Description: ",
                         input [
                             onInput UpdateTaskRegister
                         ] [],
-                        button [type_ "submit"] [text "Create"]
-                    ]
-                ]
+                        br [] [],
+                        br [] [],
+                        text "Time: ",
+                        input [type_ "number"][],
+                        text " Minutes", 
+                        br [] [],
+                        br [] [],
+                        button [type_ "submit"] [text "Create"] 
+                    ]  
+         ]
 
 
 createView model = div [fullSizeStyle] [
