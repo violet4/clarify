@@ -29,10 +29,7 @@ currentView model =
         TodayState -> todayView model
         TaskState -> taskView model
         LifeGoalsState -> lifeGoalsView model
-        CreateState -> createView model
         LifeGoalState -> lifeGoalsView model
-        CreateLifeGoalState -> createLifeGoalView model
-        CreateTaskState -> createTaskView model
         DeleteLifeGoal id -> lifeGoalsView model
         _ -> todayView model
 
@@ -64,41 +61,12 @@ tasksToHtmlList model =
 -- tasks view shows all tasks
 taskView model =
     div [fullSizeStyle]
+        (List.append
             (List.concat (tasksToHtmlList model))
-
--- today view shows tasks we chose for today
-todayView: Model -> Html Msg
-todayView model = div [fullSizeStyle]
-    (List.map (\x -> text x.title) model.today.tasks)
-
-lifeGoalElement: LifeGoal -> Html Msg
-lifeGoalElement lifeGoal =
-    div [width100p] [
-        text lifeGoal.title,
-        text " ",
-        button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
-    ]
-
-lifeGoalsView: Model -> Html Msg
-lifeGoalsView model = div [fullSizeStyle]
-         (List.map lifeGoalElement model.life_goals)
-
-createLifeGoalView: Model -> Html Msg
-createLifeGoalView model = div [fullSizeStyle][
-            br [] [],
-            
-            form [onSubmit CreateLifeGoal] [
-                text "Description: ",
-                input [
-                  onInput UpdateCreateLifeGoalRegister
-              ] [],
-              br [] [],
-              button [type_ "submit"] [text "Create"]
-           ]]
-
-createTaskView: Model -> Html Msg
-createTaskView model = div [fullSizeStyle] 
-         [
+                [
+                    br [] [],
+                    br [] [],
+                    text "Create a Task",
                     br [] [],
                     --text "TaskState",
                     text "Life Goal: ",
@@ -120,21 +88,39 @@ createTaskView model = div [fullSizeStyle]
                         button [type_ "submit"] [text "Create"] 
                     ]  
          ]
+    )
 
+-- today view shows tasks we chose for today
+todayView: Model -> Html Msg
+todayView model = div [fullSizeStyle]
+    (List.map (\x -> text x.title) model.today.tasks)
 
-createView model = div [fullSizeStyle] [
-        text "Create a Task or Life Goal",
-        br [] [],
-        a [
-            (href "#"),
-            (onClick CreateTaskState)
-        ] [text "Create Task"],
-        br [] [],
-        a [
-            (href "#"),
-            (onClick CreateLifeGoalState)
-        ] [text "Create Life Goal"]
+lifeGoalElement: LifeGoal -> Html Msg
+lifeGoalElement lifeGoal =
+    div [width100p] [
+        text lifeGoal.title,
+        text " ",
+        button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
     ]
+
+lifeGoalsView: Model -> Html Msg
+lifeGoalsView model = div [fullSizeStyle]
+    (List.append
+         (List.map lifeGoalElement model.life_goals)
+         [
+            br [] [],
+            br [] [],
+            text "Create a Life Goal",
+            br [] [],
+            form [onSubmit CreateLifeGoal] [
+                text "Description: ",
+                input [
+                  onInput UpdateCreateLifeGoalRegister
+              ] [],
+              br [] [],
+              button [type_ "submit"] [text "Create"]
+           ]]
+     )
 
 
 --navigation: () -> Html msg
@@ -153,9 +139,7 @@ htmlNavigationBar model = div [] [
         text " ",
         todayLinkButton model,
         text " ",
-        lifeGoalsLinkButton model,
-        text " ",
-        createViewButton model
+        lifeGoalsLinkButton model
     ]
 
 lifeGoalsLinkButton model =
