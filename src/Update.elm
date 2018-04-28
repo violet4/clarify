@@ -3,6 +3,9 @@ module Update exposing (update)
 import Msg exposing (..)
 import Model exposing (..)
 
+findTaskById tasks taskID =
+    List.head (List.filter (\task -> task.taskID /= taskID) tasks)
+
 -- update the current state, which we use
 -- to decide which view to display.
 -- here we will also need to use "msg" to be able to
@@ -30,9 +33,23 @@ update msg model =
             new_task_title = in_text,
             debug = toString msg
             }
+        UpdateTaskEstimatedMinutes (taskID, estMinutesStr) ->
+            {model | debug = "taskid " ++ (toString taskID) ++ "; estMinStr " ++ estMinutesStr}
+--            case (findTaskById model.tasks taskID) of
+--                Nothing -> model
+--                Just task ->
+--                    case String.toInt estMinutesStr of
+--                        -- no change
+--                        Err thingy -> {model | debug="estimated minutes parsed:" ++ thingy}
+--                        Ok estimatedMinutes ->
+--                            let
+--                                updatedTask = {task | estimatedMinutes = estimatedMinutes}
+--                                newTasks = List.map (\t -> if t.taskID == taskID then updatedTask else t) model.tasks
+--                            in
+--                                {model | tasks = newTasks, debug="estimated minutes parsed:" ++ (toString estimatedMinutes)}
         CreateTask -> {
             model |
-            tasks = List.append model.tasks [(Task model.new_task_title False 0 model.taskID)],
+            tasks = List.append model.tasks [Task model.new_task_title False 0 model.taskID],
             taskID = model.taskID + 1,
             new_task_title = "",
             debug = toString msg

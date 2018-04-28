@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
-    select, option
+    select, option, map
     )
 import Html.Attributes exposing (href, style, align, id, type_, value)
 import Html.Events exposing (onClick, onSubmit, onInput)
@@ -34,21 +34,28 @@ currentView model =
         DeleteLifeGoal id -> lifeGoalsView model
         _ -> todayView model
 
-taskLifeGoalSelector model taskID =
+
+lifeGoalSelector life_goals =
+    -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
     select [] (
         List.map
-        -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
         (\lifeGoal -> (option [] [text lifeGoal.title]))
-        model.life_goals
+        life_goals
     )
+
+estimatedMinutesSelector task =
+    map
+        (\estMin -> UpdateTaskEstimatedMinutes (task.taskID, estMin))
+        (input [type_ "number"] [])
 
 tasksToHtmlList model =
     List.map (\task -> [
-        text (task.title ++ " "),
+        text ((toString task.taskID) ++ " " ++ task.title ++ " "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
-        (taskLifeGoalSelector model task.taskID),
-        input [type_ "number", value "0"] [],
+        (lifeGoalSelector model.life_goals),
+        -- estimated minutes
+        estimatedMinutesSelector task,
         br [] []
     ]) model.tasks
 
@@ -56,18 +63,17 @@ tasksToHtmlList model =
 taskView model =
     div [fullSizeStyle]
         (List.append
-            (List.concat
-            (tasksToHtmlList model))
-            [
-                br [] [],
-                --text "TaskState",
-                form [onSubmit CreateTask] [
-                    input [
-                        onInput UpdateTaskRegister
-                    ] [],
-                    button [type_ "submit"] [text "Create"]
+            (List.concat (tasksToHtmlList model))
+                [
+                    br [] [],
+                    --text "TaskState",
+                    form [onSubmit CreateTask] [
+                        input [
+                            onInput UpdateTaskRegister
+                        ] [],
+                        button [type_ "submit"] [text "Create"]
+                    ]
                 ]
-            ]
     )
 
 -- today view shows tasks we chose for today
