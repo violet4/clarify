@@ -12,11 +12,11 @@ import Model exposing (..)
 
 
 -- styles
-fullSizeStyle = style [("width", "100%"), ("height", "75%")]
+fullSizeStyle = style [("width", "100%"), ("height", "75%"), ("padding-left", "1%"), ("padding-top", "1%"), ("padding-right", "1%")]
 width100p = style [("width", "100%")]
 htmlAppHeader = div [style [
         ("color", "#1D417D"),
-        ("font-size", "28px"),
+        ("font-size", "30px"),
         ("padding-left", "40%")
     ]] [text "Clarify"]
 
@@ -65,6 +65,7 @@ taskView model =
             (List.concat (tasksToHtmlList model))
                 [
                     br [] [],
+                    hr [] [],
                     br [] [],
                     text "Create a Task",
                     br [] [],
@@ -73,19 +74,20 @@ taskView model =
                     lifeGoalSelector model.life_goals,
                     br [] [], 
                     br [] [],                 
-                    form [onSubmit CreateTask] [
+                    form [onSubmit CreateTask] [ 
+                        text "Time: ",
+                        input [type_ "number"][],
+                        text " Minutes",
+                        br [] [],
+                        br [] [],
                         text "Description: ",
                         input [
                             onInput UpdateTaskRegister
                         ] [],
+                         
                         br [] [],
                         br [] [],
-                        text "Time: ",
-                        input [type_ "number"][],
-                        text " Minutes", 
-                        br [] [],
-                        br [] [],
-                        button [type_ "submit"] [text "Create"] 
+                        button [type_ "submit" ] [text "Create"] 
                     ]  
          ]
     )
@@ -109,6 +111,7 @@ lifeGoalsView model = div [fullSizeStyle]
          (List.map lifeGoalElement model.life_goals)
          [
             br [] [],
+            hr [] [],
             br [] [],
             text "Create a Life Goal",
             br [] [],
@@ -117,6 +120,7 @@ lifeGoalsView model = div [fullSizeStyle]
                 input [
                   onInput UpdateCreateLifeGoalRegister
               ] [],
+              br [] [],
               br [] [],
               button [type_ "submit"] [text "Create"]
            ]]
