@@ -21,7 +21,7 @@ update msg model =
             new_life_goal_title = in_text,
             debug = toString msg
             }
-        CreateLifeGoal -> {
+        CreateLifeGoal -> if model.new_life_goal_title == "" then model else {
             model |
             life_goals = (List.append model.life_goals [LifeGoal model.new_life_goal_title [] model.lifeGoalID]),
             lifeGoalID = model.lifeGoalID + 1,
@@ -47,7 +47,7 @@ update msg model =
 --                                newTasks = List.map (\t -> if t.taskID == taskID then updatedTask else t) model.tasks
 --                            in
 --                                {model | tasks = newTasks, debug="estimated minutes parsed:" ++ (toString estimatedMinutes)}
-        CreateTask -> {
+        CreateTask -> if model.new_task_title == "" then model else {
             model |
             tasks = List.append model.tasks [Task model.new_task_title False 0 model.taskID],
             taskID = model.taskID + 1,
