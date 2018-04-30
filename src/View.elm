@@ -57,9 +57,9 @@ tasksToHtmlList tasksView model tasks =
         (lifeGoalSelector model.life_goals),
         -- estimated minutes
         estimatedMinutesSelector task,
-        if tasksView
-            then button [onClick (AddToday task.taskID)] [text "Add to Today"]
-            else button [onClick (RemoveToday task.taskID)] [text "Remove from Today"],
+        if (List.member task.taskID model.todayTaskIds)
+            then button [onClick (RemoveToday task.taskID)] [text "Remove from Today"]
+            else button [onClick (AddToday task.taskID)] [text "Add to Today"],
         br [] []
     ]) tasks
 
