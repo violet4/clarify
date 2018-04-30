@@ -33,20 +33,14 @@ update msg model =
             new_task_title = in_text,
             debug = toString msg
             }
-        UpdateTaskEstimatedMinutes (taskID, estMinutesStr) ->
-            {model | debug = "taskid " ++ (toString taskID) ++ "; estMinStr " ++ estMinutesStr}
---            case (findTaskById model.tasks taskID) of
---                Nothing -> model
---                Just task ->
---                    case String.toInt estMinutesStr of
---                        -- no change
---                        Err thingy -> {model | debug="estimated minutes parsed:" ++ thingy}
---                        Ok estimatedMinutes ->
---                            let
---                                updatedTask = {task | estimatedMinutes = estimatedMinutes}
---                                newTasks = List.map (\t -> if t.taskID == taskID then updatedTask else t) model.tasks
---                            in
---                                {model | tasks = newTasks, debug="estimated minutes parsed:" ++ (toString estimatedMinutes)}
+        UpdateTaskEstimatedMinutes taskID estMinutesStr ->
+            case String.toInt estMinutesStr of
+                Err _ -> model
+                Ok estimatedMinutes ->
+                    {model |
+                        debug = "taskID " ++ (toString taskID) ++ "; estMinutesStr " ++ estMinutesStr
+                        , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=estimatedMinutes}) model.tasks
+                        }
         CreateTask -> if model.new_task_title == "" then model else {
             model |
             tasks = List.append model.tasks [Task model.new_task_title False 0 model.taskID],

@@ -43,9 +43,11 @@ lifeGoalSelector life_goals =
     )
 
 estimatedMinutesSelector task =
-    map
-        (\estMin -> UpdateTaskEstimatedMinutes (task.taskID, estMin))
-        (input [type_ "number"] [])
+    input [
+        type_ "number",
+        onInput (UpdateTaskEstimatedMinutes task.taskID),
+        value (toString task.estimatedMinutes)
+    ] []
 
 tasksToHtmlList model =
     List.map (\task -> [
