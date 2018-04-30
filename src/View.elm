@@ -51,6 +51,7 @@ estimatedMinutesSelector task =
 addRemoveButton150width = style [("width", "150px")]
 tasksToHtmlList tasksView model tasks =
     List.map (\task -> [
+        text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
         if (List.member task.taskID model.todayTaskIds)
             then button [
                 addRemoveButton150width ,
