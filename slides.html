@@ -100,6 +100,39 @@ update msg model =
         ...
 </pre>
 </div>
+<div class="slide">
+    <a href="http://elm-lang.org/examples/buttons" target="_blank">Elm Buttons Example in 5 minutes</a>
+<pre class="prettyprint">
+import Html exposing (div, button, text)
+import Html.Events exposing (onClick)
+
+main = Html.beginnerProgram {
+  model=model,
+  view=view,
+  update=update
+  }
+
+type alias Model = {value: Int}
+model = Model 0
+
+type Msg =
+    Noop
+    | Increment
+    | Decrement
+
+view model =
+    div [] [
+        button [onClick Decrement] [text "-"],
+        button [onClick Increment] [text "+"],
+        text (toString model.value)
+    ]
+
+update msg model =
+    case msg of
+        Increment -> {model|value=model.value+1}
+        Decrement -> {model|value=model.value-1}
+        _ -> model
+</div>
 </body></html>
 
 
