@@ -87,6 +87,8 @@ update msg model =
             debug = toString msg,
             life_goals = List.filter (\lifeGoal -> lifeGoal.id /= id) model.life_goals
             }
+        AddToday taskID ->
+            {model|todayTaskIds=taskID :: model.todayTaskIds}
         _ -> {model | state = msg, debug = toString msg}
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }

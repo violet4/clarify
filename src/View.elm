@@ -49,7 +49,7 @@ estimatedMinutesSelector task =
         value (toString task.estimatedMinutes)
     ] []
 
-tasksToHtmlList model =
+tasksToHtmlList tasksView model tasks =
     List.map (\task -> [
         text ((toString task.taskID) ++ " " ++ task.title ++ " "),
         -- ability to select a life goal for this task
@@ -57,50 +57,61 @@ tasksToHtmlList model =
         (lifeGoalSelector model.life_goals),
         -- estimated minutes
         estimatedMinutesSelector task,
+        if tasksView
+            then button [onClick (AddToday task.taskID)] [text "Add to Today"]
+            else button [onClick (AddToday task.taskID)] [text "Remove from Today"],
         br [] []
-    ]) model.tasks
+    ]) tasks
 
 -- tasks view shows all tasks
 taskView model =
     div [fullSizeStyle]
         (List.append
-            (List.concat (tasksToHtmlList model))
-                [
-                    br [] [],
-                    hr [] [],
-                    br [] [],
+            -- list of current tasks
+            (List.concat (tasksToHtmlList True model model.tasks))
+            -- section to create a new task
+            [
+                br [] [],
+                hr [] [],
+                br [] [],
+
+                -- form to create a new task
+                form [onSubmit CreateTask] [
                     text "Create a Task",
                     br [] [],
                     --text "TaskState",
                     text "Life Goal: ",
                     lifeGoalSelector model.life_goals,
-                    br [] [], 
-                    br [] [],                 
-                    form [onSubmit CreateTask] [ 
-                        text "Time: ",
-                        input [
-                            type_ "number",
-                            onInput (UpdateTaskRegister "estimatedMinutes")
-                        ][],
-                        text " Minutes",
-                        br [] [],
-                        br [] [],
-                        text "Description: ",
-                        input [
-                            onInput (UpdateTaskRegister "description")
-                        ] [],
-                         
-                        br [] [],
-                        br [] [],
-                        button [type_ "submit" ] [text "Create"] 
-                    ]  
+                    br [] [],
+                    br [] [],
+                    text "Time: ",
+                    input [
+                        type_ "number",
+                        onInput (UpdateTaskRegister "estimatedMinutes")
+                    ][],
+                    text " Minutes",
+                    br [] [],
+                    br [] [],
+                    text "Description: ",
+                    input [
+                        onInput (UpdateTaskRegister "description")
+                    ] [],
+
+                    br [] [],
+                    br [] [],
+                    button [type_ "submit" ] [text "Create"]
+                ]
+                -- end form to create a new task
          ]
     )
 
 -- today view shows tasks we chose for today
 todayView: Model -> Html Msg
-todayView model = div [fullSizeStyle]
-    (List.map (\x -> text x.title) model.today.tasks)
+todayView model =
+    div [fullSizeStyle]
+    (List.append
+             [div [] [text "today"]]
+             (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks))))
 
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =

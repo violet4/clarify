@@ -26,7 +26,7 @@ type alias LifeGoal = {
     }
 type alias Model = {
     life_goals: List LifeGoal,
-    today: Today,
+    todayTaskIds: List Int,
     tasks: List Task,
     state: Msg,
     debug: String,

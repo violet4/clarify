@@ -24,8 +24,8 @@ model = Model
         LifeGoal "cleanliness" [] 0,
         LifeGoal "education" [] 1
     ]
-    -- today: Today
-    (Today [])
+    -- todayTaskIds: List Int
+    []
     -- tasks
     [
         (Task "clean desk" False 0 0 -1),
