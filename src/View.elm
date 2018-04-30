@@ -10,7 +10,7 @@ import Html.Events exposing (onClick, onSubmit, onInput)
 import Msg exposing (..)
 import Model exposing (..)
 
--- styles
+-- styles ######################################################################
 fullSizeStyle = style [("width", "100%"), ("height", "75%"), ("padding-left", "1%"), ("padding-top", "1%"), ("padding-right", "1%")]
 width100p = style [("width", "100%")]
 htmlAppHeader = div [style [
@@ -50,7 +50,9 @@ estimatedMinutesSelector task =
 
 tasksToHtmlList tasksView model tasks =
     List.map (\task -> [
-        text ((toString task.taskID) ++ " " ++ task.title ++ " "),
+        text (
+            --(toString task.taskID) ++ " " ++
+            task.title ++ " "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
         (lifeGoalSelector model.life_goals),
@@ -108,9 +110,15 @@ taskView model =
 todayView: Model -> Html Msg
 todayView model =
     div [fullSizeStyle]
-    (List.append
-             [div [] [text "today"]]
-             (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks))))
+    (if ((List.length model.todayTaskIds) > 0)
+             then (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
+             else [
+                 text "You don't have any tasks for today!",
+                 br [] [],
+                 text "Go to ",
+                 todayLinkButton model,
+                 text " to add some!"
+             ])
 
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
