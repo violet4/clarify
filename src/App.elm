@@ -44,6 +44,8 @@ model = Model
     3 -- taskID
     "" -- new_life_goal_title
     (createEmptyTask 2)
+    -- showDebug
+    False
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.

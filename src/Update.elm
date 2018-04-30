@@ -87,6 +87,7 @@ update msg model =
             debug = toString msg,
             life_goals = List.filter (\lifeGoal -> lifeGoal.id /= id) model.life_goals
             }
+        UpdateDebug -> {model|showDebug=not model.showDebug}
         AddToday taskID ->
             {model|todayTaskIds=taskID :: model.todayTaskIds}
         RemoveToday taskID ->

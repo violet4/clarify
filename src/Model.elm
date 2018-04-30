@@ -33,5 +33,6 @@ type alias Model = {
     lifeGoalID: Int,
     taskID: Int,
     new_life_goal_title: String,
-    newTaskRegister: Task
+    newTaskRegister: Task,
+    showDebug: Bool
     }

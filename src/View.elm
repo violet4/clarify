@@ -10,7 +10,6 @@ import Html.Events exposing (onClick, onSubmit, onInput)
 import Msg exposing (..)
 import Model exposing (..)
 
-
 -- styles
 fullSizeStyle = style [("width", "100%"), ("height", "75%"), ("padding-left", "1%"), ("padding-top", "1%"), ("padding-right", "1%")]
 width100p = style [("width", "100%")]
@@ -159,7 +158,9 @@ htmlNavigationBar model = div [] [
         text " ",
         todayLinkButton model,
         text " ",
-        lifeGoalsLinkButton model
+        lifeGoalsLinkButton model,
+        text " ",
+        a [href "#", onClick UpdateDebug] [text "Debug"]
     ]
 
 lifeGoalsLinkButton model =
@@ -211,12 +212,11 @@ mainViewHtmlNavigationBar = div [] [
 view: Model -> Html Msg
 view model =
     div [fullSizeStyle] [
-        text (toString model.debug),
+        text (if model.showDebug then (toString model.debug) else ""),
         htmlAppHeader,
         htmlNavigationBar model,
         hr [] [],
-        text (toString model),
-        hr [] [],
+        text (if model.showDebug then (toString model) else ""),
+        if model.showDebug then hr [] [] else text "",
         currentView model
     ]
-

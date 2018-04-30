@@ -18,3 +18,4 @@ type Msg =
     | DeleteLifeGoal Int
     | AddToday Int
     | RemoveToday Int
+    | UpdateDebug
