@@ -6,10 +6,10 @@ import Msg exposing (Msg)
 import Json.Decode exposing (..)
 import Json.Encode
 
--- Loading should be done in index.html?
---port load: Model -> Sub msg
-port setStorage: Model -> Cmd msg
+-- Loading should be done in index.html
+port save: Model -> Cmd msg
 
+-- Might need to change name to avoid conflict with Update.elm
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     let
@@ -17,11 +17,15 @@ update msg model =
             update msg model
     in
         ( newModel
-        , Cmd.batch [ setStorage newModel, cmds ]
+        , Cmd.batch [ save newModel, cmds ]
         )
 
 
+--Encoders and decoders based on Model.elm
+
 -- Start of Json decoders
+-- Probably need to change Json.Encode.object to something else
+-- Can't figure out how to get Json.object4 like in https://stackoverflow.com/questions/37999504/how-to-pass-union-types-through-elm-ports/38006565#38006565
 
 modelDecoder : Json.Decode.Decoder Model
 modelDecoder =
@@ -36,7 +40,6 @@ modelDecoder =
         (field "taskID" Json.Decode.int)
         (field "new_list_goal_title" Json.Decode.string)
         (field "new_test_title" Json.Decode.string)
-
 
 taskDecoder : Json.Decode.Decoder Task
 taskDecoder =
@@ -64,3 +67,24 @@ todayDecoder : Json.Decode.Decoder Today
 todayDecoder =
     Json.Encode.object Today
         (field "tasks" Json.Decode.list taskDecoder)
+
+
+
+--Start of Json encoders
+
+modelToValue : Model -> Json.Encode.Value
+modelToValue model =
+    Json.Encode.object
+    [
+
+    ]
+
+taskToValue : Task -> Json.Encode.Value
+taskToValue task =
+    Json.Encode.object
+    [
+        ("title", Json.Encode.string task.title)
+        ("complete", Json.Encode.bool task.complete)
+        ("estimatedMinutes", Json.Encode.int task.estimatedMinutes)
+        ("taskID", Json.Encode.int task.taskID)
+    ]
