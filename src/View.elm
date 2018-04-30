@@ -59,7 +59,7 @@ tasksToHtmlList tasksView model tasks =
         estimatedMinutesSelector task,
         if tasksView
             then button [onClick (AddToday task.taskID)] [text "Add to Today"]
-            else button [onClick (AddToday task.taskID)] [text "Remove from Today"],
+            else button [onClick (RemoveToday task.taskID)] [text "Remove from Today"],
         br [] []
     ]) tasks
 

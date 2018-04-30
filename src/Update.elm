@@ -89,6 +89,11 @@ update msg model =
             }
         AddToday taskID ->
             {model|todayTaskIds=taskID :: model.todayTaskIds}
+        RemoveToday taskID ->
+            {model|todayTaskIds=List.filter (\tid -> tid /= taskID) model.todayTaskIds}
+        -- even if we don't know what the input was,
+        -- we should still update the state in case
+        -- user clicked on another tab!
         _ -> {model | state = msg, debug = toString msg}
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }

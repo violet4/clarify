@@ -17,3 +17,4 @@ type Msg =
     | LifeGoalsState
     | DeleteLifeGoal Int
     | AddToday Int
+    | RemoveToday Int
