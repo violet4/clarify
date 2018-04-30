@@ -28,21 +28,22 @@ model = Model
     (Today [])
     -- tasks
     [
-        (Task "clean desk" False 0 0),
+        (Task "clean desk" False 0 0 -1),
          Task
              "vacuum room" -- title
              False -- complete
              0 -- estimatedMinutes
              1 -- taskID
+             -1 -- lifeGoalID
     ]
     -- starting state
 --    TodayState
     TaskState
     "" -- debug
     2 -- lifeGoalID
-    0 -- taskID
+    3 -- taskID
     "" -- new_life_goal_title
-    "" -- new_task_title
+    (createEmptyTask 2)
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.

@@ -7,7 +7,9 @@ type alias Task = {
     , complete: Bool
     , estimatedMinutes: Int
     , taskID: Int
+    , lifeGoalID: LifeGoalID
     }
+createEmptyTask taskID = Task "" False 0 taskID -1
 type alias Today = {
     tasks: List Task
     }
@@ -16,10 +18,11 @@ type alias Priority = {
     tasks: List Task,
     id: Int
     }
+type alias LifeGoalID = Int
 type alias LifeGoal = {
     title: String,
     priorities: List Priority,
-    id: Int
+    id: LifeGoalID
     }
 type alias Model = {
     life_goals: List LifeGoal,
@@ -30,5 +33,5 @@ type alias Model = {
     lifeGoalID: Int,
     taskID: Int,
     new_life_goal_title: String,
-    new_task_title: String
+    newTaskRegister: Task
     }

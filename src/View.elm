@@ -78,13 +78,16 @@ taskView model =
                     br [] [],                 
                     form [onSubmit CreateTask] [ 
                         text "Time: ",
-                        input [type_ "number"][],
+                        input [
+                            type_ "number",
+                            onInput (UpdateTaskRegister "estimatedMinutes")
+                        ][],
                         text " Minutes",
                         br [] [],
                         br [] [],
                         text "Description: ",
                         input [
-                            onInput UpdateTaskRegister
+                            onInput (UpdateTaskRegister "description")
                         ] [],
                          
                         br [] [],

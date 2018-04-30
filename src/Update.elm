@@ -28,11 +28,37 @@ update msg model =
             new_life_goal_title = "",
             debug = toString msg
             }
-        UpdateTaskRegister in_text -> {
-            model |
-            new_task_title = in_text,
-            debug = toString msg
-            }
+        UpdateTaskRegister msgName in_text ->
+            case msgName of
+                "estimatedMinutes" ->
+                    case String.toInt in_text of
+                        Err _ -> model
+                        Ok estimatedMinutes ->
+                            let newTaskRegister=model.newTaskRegister
+                            in {model|newTaskRegister={newTaskRegister|estimatedMinutes=estimatedMinutes}}
+                "description" ->
+                    let newTaskRegister = model.newTaskRegister
+                    in {model|newTaskRegister={newTaskRegister|title=in_text}}
+--                "lifeGoal" ->
+--                    -- in_text to lifeGoalIDInt
+--                    case String.toInt in_text of
+--                        Err _ -> model
+--                        Ok lifeGoalIDInt ->
+--                            let
+--                                lifeGoals = List.map (
+--                                        \lg -> if lg.lifeGoalID /= lifeGoalIDInt then
+--                                    ) model.life_goals
+--
+--
+--                                banana = List.length [1,2,3]
+--                            in
+--                                let newTaskRegister = model.newTaskRegister
+--                                in {model|newTaskRegister={newTaskRegister|description=in_text}}
+                _ -> model
+--        {
+--            model |
+--            debug = toString msg
+--            }
         UpdateTaskEstimatedMinutes taskID estMinutesStr ->
             case String.toInt estMinutesStr of
                 Err _ -> model
@@ -41,11 +67,17 @@ update msg model =
                         debug = "taskID " ++ (toString taskID) ++ "; estMinutesStr " ++ estMinutesStr
                         , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=estimatedMinutes}) model.tasks
                         }
-        CreateTask -> if model.new_task_title == "" then model else {
+        -- don't let user create empty task
+        CreateTask -> if model.newTaskRegister.title == "" then model else {
             model |
-            tasks = List.append model.tasks [Task model.new_task_title False 0 model.taskID],
+--                title: String
+--                , complete: Bool
+--                , estimatedMinutes: Int
+--                , taskID: Int
+
+            tasks = List.append model.tasks [model.newTaskRegister],
+            newTaskRegister = createEmptyTask model.taskID,
             taskID = model.taskID + 1,
-            new_task_title = "",
             debug = toString msg
             }
         -- TODO if user deletes all life goals, what should we do to the tasks marked as that life goal?
