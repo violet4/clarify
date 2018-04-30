@@ -48,19 +48,26 @@ estimatedMinutesSelector task =
         value (toString task.estimatedMinutes)
     ] []
 
+addRemoveButton150width = style [("width", "150px")]
 tasksToHtmlList tasksView model tasks =
     List.map (\task -> [
+        if (List.member task.taskID model.todayTaskIds)
+            then button [
+                addRemoveButton150width ,
+                onClick (RemoveToday task.taskID)
+            ] [text "Remove from Today"]
+            else button [
+                addRemoveButton150width,
+                onClick (AddToday task.taskID)
+            ] [text    "Add to Today"],
         text (
-            --(toString task.taskID) ++ " " ++
-            task.title ++ " "),
+            --(toString task.taskID) ++
+            " " ++ task.title ++ " "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
         (lifeGoalSelector model.life_goals),
         -- estimated minutes
         estimatedMinutesSelector task,
-        if (List.member task.taskID model.todayTaskIds)
-            then button [onClick (RemoveToday task.taskID)] [text "Remove from Today"]
-            else button [onClick (AddToday task.taskID)] [text "Add to Today"],
         br [] []
     ]) tasks
 
