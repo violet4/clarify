@@ -1,6 +1,5 @@
 module Model exposing (..)
 
-import Msg exposing (..)
 
 type alias Task = {
     title: String
@@ -28,7 +27,6 @@ type alias Model = {
     life_goals: List LifeGoal,
     todayTaskIds: List Int,
     tasks: List Task,
-    state: Msg,
     debug: String,
     lifeGoalID: Int,
     taskID: Int,
