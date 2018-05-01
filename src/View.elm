@@ -25,12 +25,12 @@ noStyle = style []
 currentView (model, state) =
     case state of
         -- each of these takes a model
-        TodayState -> todayView model
-        TaskState -> taskView model
-        LifeGoalsState -> lifeGoalsView model
-        LifeGoalState -> lifeGoalsView model
-        DeleteLifeGoal id -> lifeGoalsView model
-        _ -> todayView model
+        TodayState -> todayView (model, state)
+        TaskState -> taskView (model, state)
+        LifeGoalsState -> lifeGoalsView (model, state)
+        LifeGoalState -> lifeGoalsView (model, state)
+        DeleteLifeGoal id -> lifeGoalsView (model, state)
+        _ -> todayView (model, state)
 
 
 lifeGoalSelector life_goals =
@@ -49,7 +49,7 @@ estimatedMinutesSelector task =
     ] []
 
 addRemoveButton150width = style [("width", "150px")]
-tasksToHtmlList tasksView model tasks =
+tasksToHtmlList tasksView (model, state) tasks =
     List.map (\task -> [
         text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
         if (List.member task.taskID model.todayTaskIds)
@@ -73,7 +73,7 @@ tasksToHtmlList tasksView model tasks =
     ]) tasks
 
 -- tasks view shows all tasks
-taskView model =
+taskView (model, state) =
     div [fullSizeStyle]
         (List.append
             -- list of current tasks
@@ -115,8 +115,8 @@ taskView model =
     )
 
 -- today view shows tasks we chose for today
-todayView: Model -> Html Msg
-todayView model =
+todayView: (Model, Msg) -> Html Msg
+todayView (model, state) =
     div [fullSizeStyle]
     (if ((List.length model.todayTaskIds) > 0)
              then (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
@@ -136,8 +136,8 @@ lifeGoalElement lifeGoal =
         button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
     ]
 
-lifeGoalsView: Model -> Html Msg
-lifeGoalsView model = div [fullSizeStyle]
+lifeGoalsView: (Model, Msg) -> Html Msg
+lifeGoalsView (model, state) = div [fullSizeStyle]
     (List.append
          (List.map lifeGoalElement model.life_goals)
          [
@@ -172,9 +172,9 @@ htmlNavigationBar (model, state) = div [] [
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
-        todayLinkButton model,
+        todayLinkButton (model, state),
         text " ",
-        lifeGoalsLinkButton model,
+        lifeGoalsLinkButton (model, state),
         text " ",
         a [href "#", onClick UpdateDebug] [text "Debug"]
     ]
@@ -225,8 +225,8 @@ mainViewHtmlNavigationBar = div [] [
 -- = Increment | Decrement") depending on the state we're
 -- in, we need to show the model in a way that is useful,
 -- with interactivity.
-view: Model -> Html Msg
-view model =
+view: (Model, Msg) -> Html Msg
+view (model, state) =
     div [fullSizeStyle] [
         text (if model.showDebug then (toString model.debug) else ""),
         htmlAppHeader,
@@ -234,5 +234,5 @@ view model =
         hr [] [],
         text (if model.showDebug then (toString model) else ""),
         if model.showDebug then hr [] [] else text "",
-        currentView model
+        currentView (model, state)
     ]
