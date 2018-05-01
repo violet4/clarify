@@ -8,7 +8,7 @@ import Update exposing (update)
 import LocalStore exposing(updateWithStorage, save)
 
 
-main: Program(Maybe Model) Model Msg
+main: Program (Maybe Model) Model Msg
 main = Html.programWithFlags {
     init=init, -- Checks if there is a saved model. If so then use that, else use the default
     update=updateWithStorage,
@@ -25,7 +25,8 @@ type alias Flags = Model
 
 init: Maybe Model -> (Model, Cmd Msg)
 init savedModel =
-    update TodayState ((Maybe.withDefault defaultModel savedModel), TodayState)
+    (Maybe.withDefault defaultModel savedModel, Cmd.batch [])
+
     --Maybe.withDefault defaultModel savedModel ! []
     -- possibly replace [] with [save (Maybe.withDefault defaultModel savedModel]. Doing that didn't seem to have an effect, but it might be needed later
 

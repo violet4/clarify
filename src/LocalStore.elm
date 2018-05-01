@@ -3,6 +3,7 @@ port module LocalStore exposing (..)
 import Html exposing (..)
 import Model exposing (..)
 import Msg exposing (Msg)
+import Update exposing (update)
 --import Json.Decode exposing (..)
 --import Json.Encode
 
@@ -13,9 +14,9 @@ port save: Model -> Cmd msg
 updateWithStorage : Msg -> Model -> (Model, Cmd Msg)
 updateWithStorage msg model =
     let
-        (newModel, cmds) = updateWithStorage msg model
+        (newModel, cmds) = update msg model
     in
-        ( newModel, Cmd.batch [save newModel, cmds])
+        (newModel, Cmd.batch [save newModel, cmds])
 
 
 {--
