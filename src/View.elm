@@ -224,14 +224,14 @@ mainViewHtmlNavigationBar = div [] [
 -- = Increment | Decrement") depending on the state we're
 -- in, we need to show the model in a way that is useful,
 -- with interactivity.
-view: (Model, Msg) -> Html Msg
-view (model, state) =
+view: Model -> Html Msg
+view model =
     div [fullSizeStyle] [
         text (if model.showDebug then (toString model.debug) else ""),
         htmlAppHeader,
-        htmlNavigationBar (model, state),
+        htmlNavigationBar (model, TodayState),
         hr [] [],
         text (if model.showDebug then (toString model) else ""),
         if model.showDebug then hr [] [] else text "",
-        currentView (model, state)
+        currentView (model, TodayState)
     ]

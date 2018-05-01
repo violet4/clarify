@@ -39,7 +39,7 @@ model = Model
     ]
     -- starting state
 --    TodayState
-    TaskState
+    --TaskState
     "" -- debug
     2 -- lifeGoalID
     3 -- taskID
