@@ -39,12 +39,12 @@ update newMsg (model, oldMsg) =
                 "description" ->
                     let newTaskRegister = model.newTaskRegister
                     in ({model|newTaskRegister={newTaskRegister|title=in_text}}, oldMsg)
---                "lifeGoal" ->
---                    -- in_text to lifeGoalIDInt
---                    case String.toInt in_text of
---                        Err _ -> model
---                        Ok lifeGoalIDInt ->
---                            let
+                "lifeGoal" ->
+                    case String.toInt in_text of
+                        Err _ -> (model, oldMsg)
+                        Ok lifeGoalIDInt ->
+                           let newTaskRegister = model.newTaskRegister
+                            in ({model|newTaskRegister={newTaskRegister|lifeGoalID=lifeGoalIDInt}}, oldMsg)
 --                                lifeGoals = List.map (
 --                                        \lg -> if lg.lifeGoalID /= lifeGoalIDInt then
 --                                    ) model.life_goals
@@ -78,7 +78,8 @@ update newMsg (model, oldMsg) =
             tasks = List.append model.tasks [model.newTaskRegister],
             newTaskRegister = createEmptyTask model.taskID,
             taskID = model.taskID + 1,
-            debug = toString newMsg
+            debug = toString newMsg,
+            lifeGoalID = model.lifeGoalID
             }, oldMsg)
         -- TODO if user deletes all life goals, what should we do to the tasks marked as that life goal?
         DeleteLifeGoal id -> ({
