@@ -5,21 +5,29 @@ import Model exposing (..)
 import Msg exposing (..)
 import View exposing (view)
 import Update exposing (update)
-import LocalStore exposing(updateWithStorage)
+import LocalStore exposing(updateWithStorage, save)
 
-main = Html.beginnerProgram {
-    model=model,
+main: Program(Maybe Model) Model Msg
+main = Html.programWithFlags {
+    init=init, -- Checks if there is a saved model. If so then use that, else use the default
     update=updateWithStorage,
-    view=view
+    view=view,
+    subscriptions = \_ -> Sub.none -- Doesn't subscribe to anything - we don't need JavaScript to send us anything
     }
 
 -- types:
 -- LifeGoal, Priority, Task, Subtask
 
--- default model
-model: Model
+
+init: Maybe Model -> (Model, Cmd Msg)
+init savedModel =
+    Maybe.withDefault defaultModel savedModel ! []
+    -- possibly replace [] with [save (Maybe.withDefault defaultModel savedModel]. Doing that didn't seem to have an effect, but it might be needed later
+
+
+defaultModel: Model
 --model = Model [] (Today [])
-model = Model
+defaultModel = Model
     -- life_goals
     [
         LifeGoal "cleanliness" [] 0,
@@ -39,7 +47,7 @@ model = Model
     ]
     -- starting state
 --    TodayState
-    --TaskState
+    --TaskState     this was causing an error so I commented it out. It doesn't seem to match with anything in Model.
     "" -- debug
     2 -- lifeGoalID
     3 -- taskID
