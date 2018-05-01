@@ -22,8 +22,8 @@ htmlAppHeader = div [style [
 redFont = style [("color", "red")]
 noStyle = style []
 
-currentView model =
-    case model.state of
+currentView (model, state) =
+    case state of
         -- each of these takes a model
         TodayState -> todayView model
         TaskState -> taskView model
@@ -160,7 +160,7 @@ lifeGoalsView model = div [fullSizeStyle]
 
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
-htmlNavigationBar model = div [] [
+htmlNavigationBar (model, state) = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
         a [
@@ -168,7 +168,7 @@ htmlNavigationBar model = div [] [
             -- but at least we can click them.
             (href "#"),
             (onClick TodayState),
-            (if model.state == TodayState then redFont else noStyle)
+            (if state == TodayState then redFont else noStyle)
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
@@ -179,25 +179,25 @@ htmlNavigationBar model = div [] [
         a [href "#", onClick UpdateDebug] [text "Debug"]
     ]
 
-lifeGoalsLinkButton model =
+lifeGoalsLinkButton (model, state) =
     a [
         (href "#"),
         (onClick LifeGoalsState),
-        (if model.state == LifeGoalsState then redFont else noStyle)
+        (if state == LifeGoalsState then redFont else noStyle)
     ] [text "Life Goals"]
 
-todayLinkButton model =
+todayLinkButton (model, state) =
     a [
         (href "#"),
         (onClick TaskState),
-        (if model.state == TaskState then redFont else noStyle)
+        (if state == TaskState then redFont else noStyle)
     ] [text "Tasks"]
 
-createViewButton model =
+createViewButton (model, state) =
     a [
         (href "#"),
         (onClick CreateState),
-        (if model.state == CreateState then redFont else noStyle)
+        (if state == CreateState then redFont else noStyle)
     ] [text "Create"]
 
 
