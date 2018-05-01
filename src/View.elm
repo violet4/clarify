@@ -32,12 +32,11 @@ currentView model =
         DeleteLifeGoal id -> lifeGoalsView model
         _ -> todayView model
 
-
-lifeGoalSelector life_goals =
+lifeGoalSelector life_goals task =
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
-    select [] (
+    select [onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
-        (\lifeGoal -> (option [] [text lifeGoal.title]))
+        (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
         life_goals
     )
 
@@ -66,7 +65,7 @@ tasksToHtmlList tasksView model tasks =
             " " ++ task.title ++ " "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
-        (lifeGoalSelector model.life_goals),
+        (lifeGoalSelector model.life_goals task),
         -- estimated minutes
         estimatedMinutesSelector task,
         br [] []
@@ -90,7 +89,7 @@ taskView model =
                     br [] [],
                     --text "TaskState",
                     text "Life Goal: ",
-                    lifeGoalSelector model.life_goals,
+                    lifeGoalSelector model.life_goals 0,
                     br [] [],
                     br [] [],
                     text "Time: ",
