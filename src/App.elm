@@ -7,21 +7,26 @@ import View exposing (view)
 import Update exposing (update)
 import LocalStore exposing(updateWithStorage, save)
 
+
 main: Program(Maybe Model) Model Msg
 main = Html.programWithFlags {
     init=init, -- Checks if there is a saved model. If so then use that, else use the default
     update=updateWithStorage,
     view=view,
     subscriptions = \_ -> Sub.none -- Doesn't subscribe to anything - we don't need JavaScript to send us anything
+    --view=view
     }
+
 
 -- types:
 -- LifeGoal, Priority, Task, Subtask
 
+type alias Flags = Model
 
 init: Maybe Model -> (Model, Cmd Msg)
 init savedModel =
-    Maybe.withDefault defaultModel savedModel ! []
+    update TodayState ((Maybe.withDefault defaultModel savedModel), TodayState)
+    --Maybe.withDefault defaultModel savedModel ! []
     -- possibly replace [] with [save (Maybe.withDefault defaultModel savedModel]. Doing that didn't seem to have an effect, but it might be needed later
 
 
