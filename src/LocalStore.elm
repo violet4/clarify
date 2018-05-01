@@ -3,29 +3,28 @@ port module LocalStore exposing (..)
 import Html exposing (..)
 import Model exposing (..)
 import Msg exposing (Msg)
-import Json.Decode exposing (..)
-import Json.Encode
+--import Json.Decode exposing (..)
+--import Json.Encode
 
 -- Loading should be done in index.html
 port save: Model -> Cmd msg
 
 -- Might need to change name to avoid conflict with Update.elm
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+updateWithStorage : Msg -> Model -> (Model, Cmd Msg)
+updateWithStorage msg model =
     let
-        ( newModel, cmds ) =
-            update msg model
+        (newModel, cmds) = updateWithStorage msg model
     in
-        ( newModel
-        , Cmd.batch [ save newModel, cmds ]
-        )
+        ( newModel, Cmd.batch [save newModel, cmds])
 
 
+{--
 --Encoders and decoders based on Model.elm
 
 -- Start of Json decoders
 -- Probably need to change Json.Encode.object to something else
 -- Can't figure out how to get Json.object4 like in https://stackoverflow.com/questions/37999504/how-to-pass-union-types-through-elm-ports/38006565#38006565
+
 
 modelDecoder : Json.Decode.Decoder Model
 modelDecoder =
@@ -88,3 +87,5 @@ taskToValue task =
         ("estimatedMinutes", Json.Encode.int task.estimatedMinutes)
         ("taskID", Json.Encode.int task.taskID)
     ]
+
+    --}

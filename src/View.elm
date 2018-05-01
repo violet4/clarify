@@ -76,7 +76,7 @@ taskView (model, state) =
     div [fullSizeStyle]
         (List.append
             -- list of current tasks
-            (List.concat (tasksToHtmlList True model model.tasks))
+            (List.concat (tasksToHtmlList True (model, state) model.tasks))
             -- section to create a new task
             [
                 br [] [],
@@ -118,12 +118,12 @@ todayView: (Model, Msg) -> Html Msg
 todayView (model, state) =
     div [fullSizeStyle]
     (if ((List.length model.todayTaskIds) > 0)
-             then (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
+             then (List.concat (tasksToHtmlList False (model, state) (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
              else [
                  text "You don't have any tasks for today!",
                  br [] [],
                  text "Go to ",
-                 todayLinkButton model,
+                 todayLinkButton (model, state),
                  text " to add some!"
              ])
 
@@ -229,7 +229,7 @@ view (model, state) =
     div [fullSizeStyle] [
         text (if model.showDebug then (toString model.debug) else ""),
         htmlAppHeader,
-        htmlNavigationBar model,
+        htmlNavigationBar (model, state),
         hr [] [],
         text (if model.showDebug then (toString model) else ""),
         if model.showDebug then hr [] [] else text "",

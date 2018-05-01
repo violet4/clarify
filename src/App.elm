@@ -5,10 +5,11 @@ import Model exposing (..)
 import Msg exposing (..)
 import View exposing (view)
 import Update exposing (update)
+import LocalStore exposing(updateWithStorage)
 
 main = Html.beginnerProgram {
     model=model,
-    update=update,
+    update=updateWithStorage,
     view=view
     }
 
