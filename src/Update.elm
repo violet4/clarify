@@ -11,7 +11,9 @@ findTaskById tasks taskID =
 -- here we will also need to use "msg" to be able to
 -- add/delete life goals/priorities/tasks
 update: Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+update msg model1 =
+ let model={model1|state = toString msg}
+ in
     case msg of
 --        TodayState
 --        CreateState
@@ -36,16 +38,22 @@ update msg model =
                         Err _ -> model ! []
                         Ok estimatedMinutes ->
                             let newTaskRegister=model.newTaskRegister
-                            in {model|newTaskRegister={newTaskRegister|estimatedMinutes=estimatedMinutes}} ! []
+                            in {model|
+                                newTaskRegister={newTaskRegister|estimatedMinutes=estimatedMinutes}
+                                } ! []
                 "description" ->
                     let newTaskRegister = model.newTaskRegister
-                    in {model|newTaskRegister={newTaskRegister|title=in_text}} ! []
+                    in {model|
+                        newTaskRegister={newTaskRegister|title=in_text}
+                    } ! []
                 "lifeGoal" ->
                     case String.toInt in_text of
                         Err _ -> model ! []
                         Ok lifeGoalIDInt ->
                            let newTaskRegister = model.newTaskRegister
-                            in {model|newTaskRegister={newTaskRegister|lifeGoalID=lifeGoalIDInt}} ! []
+                            in {model|
+                                newTaskRegister={newTaskRegister|lifeGoalID=lifeGoalIDInt}
+                                } ! []
 --                                lifeGoals = List.map (
 --                                        \lg -> if lg.lifeGoalID /= lifeGoalIDInt then
 --                                    ) model.life_goals

@@ -32,5 +32,6 @@ type alias Model = {
     taskID: Int,
     new_life_goal_title: String,
     newTaskRegister: Task,
-    showDebug: Bool
+    showDebug: Bool,
+    state: String
     }

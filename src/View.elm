@@ -22,15 +22,14 @@ htmlAppHeader = div [style [
 redFont = style [("color", "red")]
 noStyle = style []
 
-currentView (model, state) =
-    case state of
+currentView model =
+    case model.state of
         -- each of these takes a model
-        TodayState -> todayView (model, state)
-        TaskState -> taskView (model, state)
-        LifeGoalsState -> lifeGoalsView (model, state)
-        LifeGoalState -> lifeGoalsView (model, state)
-        DeleteLifeGoal id -> lifeGoalsView (model, state)
-        _ -> todayView (model, state)
+        "TodayState" -> todayView model
+        "TaskState" -> taskView model
+        "LifeGoalsState" -> lifeGoalsView model
+        "LifeGoalState" -> lifeGoalsView model
+        _ -> todayView model
 
 lifeGoalSelector life_goals task =
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
@@ -48,7 +47,7 @@ estimatedMinutesSelector task =
     ] []
 
 addRemoveButton150width = style [("width", "150px")]
-tasksToHtmlList tasksView (model, state) tasks =
+tasksToHtmlList tasksView model tasks =
     List.map (\task -> [
         text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
         if (List.member task.taskID model.todayTaskIds)
@@ -72,11 +71,11 @@ tasksToHtmlList tasksView (model, state) tasks =
     ]) tasks
 
 -- tasks view shows all tasks
-taskView (model, state) =
+taskView model =
     div [fullSizeStyle]
         (List.append
             -- list of current tasks
-            (List.concat (tasksToHtmlList True (model, state) model.tasks))
+            (List.concat (tasksToHtmlList True model model.tasks))
             -- section to create a new task
             [
                 br [] [],
@@ -114,16 +113,16 @@ taskView (model, state) =
     )
 
 -- today view shows tasks we chose for today
-todayView: (Model, Msg) -> Html Msg
-todayView (model, state) =
+todayView: Model -> Html Msg
+todayView model =
     div [fullSizeStyle]
     (if ((List.length model.todayTaskIds) > 0)
-             then (List.concat (tasksToHtmlList False (model, state) (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
+             then (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
              else [
                  text "You don't have any tasks for today!",
                  br [] [],
                  text "Go to ",
-                 todayLinkButton (model, state),
+                 todayLinkButton model,
                  text " to add some!"
              ])
 
@@ -135,8 +134,8 @@ lifeGoalElement lifeGoal =
         button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
     ]
 
-lifeGoalsView: (Model, Msg) -> Html Msg
-lifeGoalsView (model, state) = div [fullSizeStyle]
+lifeGoalsView: Model -> Html Msg
+lifeGoalsView model = div [fullSizeStyle]
     (List.append
          (List.map lifeGoalElement model.life_goals)
          [
@@ -159,7 +158,7 @@ lifeGoalsView (model, state) = div [fullSizeStyle]
 
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
-htmlNavigationBar (model, state) = div [] [
+htmlNavigationBar model = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
         a [
@@ -167,36 +166,36 @@ htmlNavigationBar (model, state) = div [] [
             -- but at least we can click them.
             (href "#"),
             (onClick TodayState),
-            (if state == TodayState then redFont else noStyle)
+            (if model.state == "TodayState" then redFont else noStyle)
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
-        todayLinkButton (model, state),
+        todayLinkButton model,
         text " ",
-        lifeGoalsLinkButton (model, state),
+        lifeGoalsLinkButton model,
         text " ",
         a [href "#", onClick UpdateDebug] [text "Debug"]
     ]
 
-lifeGoalsLinkButton (model, state) =
+lifeGoalsLinkButton model =
     a [
         (href "#"),
         (onClick LifeGoalsState),
-        (if state == LifeGoalsState then redFont else noStyle)
+        (if model.state == "LifeGoalsState" then redFont else noStyle)
     ] [text "Life Goals"]
 
-todayLinkButton (model, state) =
+todayLinkButton model =
     a [
         (href "#"),
         (onClick TaskState),
-        (if state == TaskState then redFont else noStyle)
+        (if model.state == "TaskState" then redFont else noStyle)
     ] [text "Tasks"]
 
-createViewButton (model, state) =
+createViewButton model =
     a [
         (href "#"),
         (onClick CreateState),
-        (if state == CreateState then redFont else noStyle)
+        (if model.state == "CreateState" then redFont else noStyle)
     ] [text "Create"]
 
 
@@ -229,9 +228,9 @@ view model =
     div [fullSizeStyle] [
         text (if model.showDebug then (toString model.debug) else ""),
         htmlAppHeader,
-        htmlNavigationBar (model, TodayState),
+        htmlNavigationBar model,
         hr [] [],
         text (if model.showDebug then (toString model) else ""),
         if model.showDebug then hr [] [] else text "",
-        currentView (model, TodayState)
+        currentView model
     ]
