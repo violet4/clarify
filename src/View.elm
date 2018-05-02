@@ -33,8 +33,8 @@ currentView model =
 
 getLifeGoal goals goalId = 
     case List.head (List.filter (\goal -> goal.id == goalId) goals) of
-        Maybe.Just goal -> goal.title
-        Maybe.Nothing -> ""
+        Maybe.Just goal -> goal
+        Maybe.Nothing -> {title = "Nothing", priorities = [], id = -10}
 
 lifeGoalSelector life_goals=
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
@@ -49,7 +49,7 @@ lifeGoalSelector2 life_goals task =
     select [onInput (UpdateTaskGoal task.taskID)] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
-        ({title = (getLifeGoal life_goals task.lifeGoalID), priorities = [], id = 0} :: life_goals)
+        ((getLifeGoal life_goals task.lifeGoalID) :: (List.filter (\goal -> goal.id /= (getLifeGoal life_goals task.lifeGoalID).id) life_goals))
     )
 
 estimatedMinutesSelector task =
