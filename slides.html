@@ -63,7 +63,7 @@
     </ul>
 </div>
 
-<!-- introduction -->
+<!-- running an Elm program -->
 <div class="slide">
     Options for running an Elm program:
     <ol>
@@ -78,6 +78,68 @@
     Then, open the resulting html file in a browser.
 </div>
 
+<!-- Elm architecture -->
+<div class="slide">
+    <ol>
+        <!-- model -->
+        <li>model</li><ul>
+            <li>Holds the data</li>
+            <li>Drives the app</li>
+            <li><pre class="prettyprint">-- Model is equivalent to Int
+type alias Model = Int
+
+-- model is of type Model, and initiate it with value 0
+model: Model
+model = 0
+</pre></li>
+        </ul>
+        <!-- view -->
+        <li>view</li><ul>
+            <li>display the data</li>
+            <li>holds one or more controllers</li>
+            <li><pre class="prettyprint">-- view takes a model and returns html that can send
+-- messages/signals (buttons/inputs that do things)
+view: Model -> Html Msg
+view model =
+  div []
+    (List.append
+      [div [] [ text (toString model) ]]
+      buttons)
+</pre></li>
+            </ul>
+    </ol>
+</div>
+
+<!-- controllers and the "update" method -->
+<div class="slide">
+    <ul>
+        <li>controllers and the "update" method</li><ul>
+            <li>Elements that users can interact with that send messages that can be used to update the model</li>
+            <li><pre class="prettyprint">
+-- returns elements that users can interact with
+-- that send messages that can be used to update
+-- the model
+buttons: List (Html Msg)
+buttons =
+  [
+    button [ onClick Decrement ] [ text "-" ],
+    button [ onClick Increment ] [ text "+" ]
+  ]</pre></li>
+            <li>Receive messages and use them to update the model</li>
+            <li><pre class="prettyprint">
+-- takes a message and a model and returns
+-- a model that has the changes
+update: Msg -> Model -> Model
+update msg model =
+  case msg of
+    Increment -> model + 1
+    Decrement -> model - 1
+</pre></li>
+        </ul>
+
+</div>
+
+<!-- forms -->
 <div class="slide">
     Forms:
 <pre class="prettyprint">
@@ -127,9 +189,9 @@ update msg model =
 </pre>
 </div>
 
-<!-- introduction -->
+<!-- Buttons example in 5 minutes -->
 <div class="slide">
-    <a href="http://elm-lang.org/examples/buttons" target="_blank">Elm Buttons Example in 5 minutes</a>
+    Elm <a href="http://elm-lang.org/examples/buttons" target="_blank">Buttons Example</a> in 5 minutes
 <pre class="prettyprint">
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
@@ -162,30 +224,33 @@ update msg model =
         _ -> model
 </div>
 
-<!-- introduction -->
+<!-- benefits of using elm -->
 <div class="slide">
     Benefits:
     <ul>
         <li>Reusable pieces (e.g. same code on Today page as Tasks page for displaying/updating tasks)</li>
-        <li>Type safety</li>
+        <li>Guaranteed ype safety</li>
     </ul>
 </div>
 
-<!-- introduction -->
+<!-- Keeping state in a functional language -->
 <div class="slide">
     Keeping state in a functional language
     <ul>
         <li>Keep track of the current tab/view based on a state "string"</li>
-        <li><a href="https://github.com/evancz/elm-todomvc/blob/master/Todo.elm">elm-todomvc</a> stores state as model.visibility</li>
+        <li><a href="https://github.com/evancz/elm-todomvc/blob/master/Todo.elm">elm-todomvc</a> stores state as model.visibility (one of "All", "Completed", "Active") and uses that to decide whether to show completed, </li>
         <li></li>
         <li></li>
     </ul>
 </div>
 
-<!-- introduction -->
+<!-- empty -->
 <div class="slide">
-    Empty slide
+    End
 </div>
+
+
+
 </body></html>
 
 
