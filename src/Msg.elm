@@ -21,3 +21,5 @@ type Msg =
     | AddToday Int
     | RemoveToday Int
     | UpdateDebug
+    | SettingsViewState
+    | ToggleSetting String

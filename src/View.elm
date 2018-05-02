@@ -29,7 +29,27 @@ currentView model =
         "TaskState" -> taskView model
         "LifeGoalsState" -> lifeGoalsView model
         "LifeGoalState" -> lifeGoalsView model
+        "SettingsViewState" -> settingsView model
         _ -> todayView model
+
+settingsButton model name helpText =
+    div [] [
+        button [onClick (ToggleSetting name)] [
+            text (if (List.member name model.settings)
+                then "Turn off"
+                else "Turn on"
+            )],
+        text (" " ++ name ++ ": " ++ helpText)
+    ]
+
+settingsView: Model -> Html Msg
+settingsView model =
+    div [fullSizeStyle] [
+        settingsButton
+            model
+            "Hide today tasks from tasks page"
+            "When you add a task to today from the today page, it will no longer display on the tasks page"
+    ]
 
 getLifeGoal goals goalId = 
     case List.head (List.filter (\goal -> goal.id == goalId) goals) of
@@ -59,9 +79,9 @@ estimatedMinutesSelector task =
         value (toString task.estimatedMinutes)
     ] []
 
-addRemoveButton150width = style [("width", "150px")]
-tasksToHtmlList tasksView model tasks =
-    List.map (\task -> [
+taskToHtmlDisplay: Model -> Task -> List (Html Msg)
+taskToHtmlDisplay model task =
+    [
         text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
         button [
                 onClick (DeleteTask task.taskID)
@@ -84,15 +104,33 @@ tasksToHtmlList tasksView model tasks =
         -- estimated minutes
         estimatedMinutesSelector task,
         br [] []
-    ]) tasks
+    ]
 
+addRemoveButton150width = style [("width", "150px")]
+
+taskTodayMatchesViewState: Model -> Task -> Bool
+taskTodayMatchesViewState model task =
+    if List.member "Hide today tasks from tasks page" model.settings
+        then
+            case model.state of
+                "TodayState" -> List.member task.taskID model.todayTaskIds
+                _ -> not (List.member task.taskID model.todayTaskIds)
+        else True
+
+taskListToHtmlList model tasks =
+    List.map
+        (\task -> taskToHtmlDisplay model task)
+        (List.filter
+            (\t -> taskTodayMatchesViewState model t)
+            tasks
+        )
 
 -- tasks view shows all tasks
 taskView model =
     div [fullSizeStyle]
         (List.append
             -- list of current tasks
-            (List.concat (tasksToHtmlList True model model.tasks))
+            (List.concat (taskListToHtmlList model model.tasks))
             -- section to create a new task
             [
                 br [] [],
@@ -134,7 +172,7 @@ todayView: Model -> Html Msg
 todayView model =
     div [fullSizeStyle]
     (if ((List.length model.todayTaskIds) > 0)
-             then (List.concat (tasksToHtmlList False model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
+             then (List.concat (taskListToHtmlList model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
              else [
                  text "You don't have any tasks for today!",
                  br [] [],
@@ -172,7 +210,6 @@ lifeGoalsView model = div [fullSizeStyle]
            ]]
      )
 
-
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
 htmlNavigationBar model = div [] [
@@ -191,6 +228,8 @@ htmlNavigationBar model = div [] [
         text " ",
         lifeGoalsLinkButton model,
         text " ",
+        settingsLinkButton model,
+        text " ",
         a [href "#", onClick UpdateDebug] [text "Debug"]
     ]
 
@@ -200,6 +239,13 @@ lifeGoalsLinkButton model =
         (onClick LifeGoalsState),
         (if model.state == "LifeGoalsState" then redFont else noStyle)
     ] [text "Life Goals"]
+
+settingsLinkButton model =
+    a [
+        (href "#"),
+        (onClick SettingsViewState),
+        (if model.state == "SettingsViewState" then redFont else noStyle)
+    ] [text "Settings"]
 
 todayLinkButton model =
     a [

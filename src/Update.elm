@@ -17,6 +17,14 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
+        ToggleSetting in_text ->
+            let
+                settings =
+                    if List.member in_text model.settings
+                        then List.filter (\s -> s /= in_text) model.settings
+                        else in_text :: model.settings
+            in
+                {model|settings=settings} ! []
         UpdateCreateLifeGoalRegister in_text -> {
             model |
             new_life_goal_title = in_text,

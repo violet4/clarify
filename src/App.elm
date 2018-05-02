@@ -63,6 +63,8 @@ defaultModel = Model
     False
     -- state
     "TodayState"
+    -- settings
+    []
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.
