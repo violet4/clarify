@@ -11,9 +11,7 @@ findTaskById tasks taskID =
 -- here we will also need to use "msg" to be able to
 -- add/delete life goals/priorities/tasks
 update: Msg -> Model -> (Model, Cmd Msg)
-update msg model1 =
- let model={model1|state = toString msg}
- in
+update msg model =
     case msg of
 --        TodayState
 --        CreateState
@@ -104,7 +102,7 @@ update msg model1 =
         -- even if we don't know what the input was,
         -- we should still update the state in case
         -- user clicked on another tab!
-        _ -> {model | debug = toString msg} ! []
+        _ -> {model | debug = toString msg, state=toString msg} ! []
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }
 -- we need a "msg" that enumerates the actions we could take at this step,
