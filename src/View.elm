@@ -31,13 +31,22 @@ currentView model =
         "LifeGoalState" -> lifeGoalsView model
         _ -> todayView model
 
-lifeGoalSelector life_goals task =
+lifeGoalSelector life_goals=
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
     select [onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
-        life_goals
+        ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
     )
+
+lifeGoalSelector2 life_goals task =
+    -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
+    select [onInput (UpdateTaskGoal task.taskID)] (
+        List.map
+        (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
+        ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
+    )
+
 
 estimatedMinutesSelector task =
     input [
@@ -61,10 +70,11 @@ tasksToHtmlList tasksView model tasks =
             ] [text    "Add to Today"],
         text (
             --(toString task.taskID) ++
-            " " ++ task.title ++ " "),
+            "   Title: " ++ task.title ++ "    "),
+        text ("Current Life Goal: " ++ (toString task.lifeGoalID) ++ " "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
-        (lifeGoalSelector model.life_goals task),
+        (lifeGoalSelector2 model.life_goals task),
         -- estimated minutes
         estimatedMinutesSelector task,
         br [] []
@@ -88,7 +98,7 @@ taskView model =
                     br [] [],
                     --text "TaskState",
                     text "Life Goal: ",
-                    lifeGoalSelector model.life_goals 0,
+                    lifeGoalSelector model.life_goals,
                     br [] [],
                     br [] [],
                     text "Time: ",

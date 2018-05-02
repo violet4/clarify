@@ -29,6 +29,15 @@ update msg model =
             new_life_goal_title = "",
             debug = toString msg
             } ! []
+
+        UpdateTaskGoal taskId goalId -> 
+            case String.toInt goalId of
+                Err _ -> model ! []
+                Ok goal ->
+                    {model |
+                        tasks = List.map (\t -> if t.taskID /= taskId then t else {t|lifeGoalID=goal}) model.tasks
+                        } ! []
+
         UpdateTaskRegister msgName in_text ->
             case msgName of
                 "estimatedMinutes" ->
