@@ -36,7 +36,7 @@ getLifeGoal goals goalId =
         Maybe.Just goal -> goal
         Maybe.Nothing -> {title = "Nothing", priorities = [], id = -10}
 
-lifeGoalSelector life_goals=
+lifeGoalSelectorForCreating life_goals=
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
     select [onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
@@ -44,7 +44,7 @@ lifeGoalSelector life_goals=
         ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
     )
 
-lifeGoalSelector2 life_goals task =
+lifeGoalSelectorForEditing life_goals task =
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
     select [onInput (UpdateTaskGoal task.taskID)] (
         List.map
@@ -63,6 +63,9 @@ addRemoveButton150width = style [("width", "150px")]
 tasksToHtmlList tasksView model tasks =
     List.map (\task -> [
         text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
+        button [
+                onClick (DeleteTask task.taskID)
+            ] [text "Delete"],
         if (List.member task.taskID model.todayTaskIds)
             then button [
                 addRemoveButton150width ,
@@ -77,7 +80,7 @@ tasksToHtmlList tasksView model tasks =
             "   Title: " ++ task.title ++ "    "),
         -- ability to select a life goal for this task
         -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
-        (lifeGoalSelector2 model.life_goals task),
+        (lifeGoalSelectorForEditing model.life_goals task),
         -- estimated minutes
         estimatedMinutesSelector task,
         br [] []
@@ -102,7 +105,7 @@ taskView model =
                     br [] [],
                     --text "TaskState",
                     text "Life Goal: ",
-                    lifeGoalSelector model.life_goals,
+                    lifeGoalSelectorForCreating model.life_goals,
                     br [] [],
                     br [] [],
                     text "Time: ",

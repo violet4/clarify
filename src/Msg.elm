@@ -17,6 +17,7 @@ type Msg =
     | UpdateTaskGoal Int String
     | LifeGoalsState
     | DeleteLifeGoal Int
+    | DeleteTask Int
     | AddToday Int
     | RemoveToday Int
     | UpdateDebug
