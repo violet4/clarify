@@ -3,3 +3,9 @@ elm-stuff
 # elm-repl generated files
 repl-temp-*
 src/main.js
+
+# mica
+/commit.txt
+/design/
+/mica_make.bash
+/other/
