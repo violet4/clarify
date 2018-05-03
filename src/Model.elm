@@ -1,5 +1,9 @@
 module Model exposing (..)
 
+createEmptyTask taskID = Task "" False 0 taskID -1
+-- don't use this in place of a real task.
+emptyTask = createEmptyTask -1
+
 
 type alias Task = {
     title: String
@@ -8,7 +12,7 @@ type alias Task = {
     , taskID: Int
     , lifeGoalID: LifeGoalID
     }
-createEmptyTask taskID = Task "" False 0 taskID -1
+
 type alias Today = {
     tasks: List Task
     }

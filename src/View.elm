@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Round exposing (round)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option, map
@@ -128,19 +129,24 @@ taskTodayMatchesViewState model task =
 taskListToHtmlList model tasks =
     List.map
         (\task -> taskToHtmlDisplay model task)
-        (List.filter
-            (\t -> taskTodayMatchesViewState model t)
-            tasks
-        )
+        tasks
 
 -- tasks view shows all tasks
 taskView model =
+    let
+        -- filter based on user preferences
+        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) model.tasks)
+    in
     div [fullSizeStyle]
         (List.append
             -- sorting buttons
             ((sortBySelectorButtons model) ::
+            (text "Total Estimated Minutes for All Displayed Tasks: ") ::
+            (tasksEstimatedMinutesSumText taskViewTasks) ::
+            (text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum taskViewTasks))/60)) ++ " hours)")) ::
+            (br [] []) :: (br [] []) ::
             -- list of current tasks
-            (List.concat (taskListToHtmlList model model.tasks)))
+            (List.concat (taskListToHtmlList model taskViewTasks)))
             -- section to create a new task
             [
                 br [] [],
@@ -177,19 +183,45 @@ taskView model =
             ]
         )
 
+tasksEstimatedMinutesSum tasks =
+    (List.foldl
+         -- sum up the estimated minutes
+         (\t1 t2 -> {estimatedMinutes=t1.estimatedMinutes + t2.estimatedMinutes})
+         {estimatedMinutes=0}
+         tasks
+     ).estimatedMinutes
+
+tasksEstimatedMinutesSumText tasks =
+    text (toString (tasksEstimatedMinutesSum tasks))
+
 -- today view shows tasks we chose for today
 todayView: Model -> Html Msg
-todayView model =
-    div [fullSizeStyle]
-    (if ((List.length model.todayTaskIds) > 0)
-             then (List.concat (taskListToHtmlList model (List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks)))
-             else [
-                 text "You don't have any tasks for today!",
-                 br [] [],
-                 text "Go to ",
-                 todayLinkButton model,
-                 text " to add some!"
-             ])
+todayView model = div [fullSizeStyle] (
+    let
+        at_least_one_task = ((List.length model.todayTaskIds) > 0)
+        todayTasks = List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks
+    in if at_least_one_task
+         then (
+            div [] [
+                text "Total Estimated Minutes for Today's Tasks: ",
+                tasksEstimatedMinutesSumText todayTasks,
+                text " (",
+                text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum todayTasks))) / 60)),
+                text " hours)"
+            ]
+            :: List.concat (
+                taskListToHtmlList
+                    model
+                    todayTasks
+            ))
+         else [
+             text "You don't have any tasks for today!",
+             br [] [],
+             text "Go to ",
+             todayLinkButton model,
+             text " to add some!"
+         ]
+     )
 
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
