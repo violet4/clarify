@@ -268,27 +268,24 @@ todayView model = div [fullSizeStyle] (
         at_least_one_task = ((List.length model.todayTaskIds) > 0)
         todayTasks = List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks
     in if at_least_one_task
-         then (
+        then ([
             div [] [
                 text "Total Estimated Minutes for Today's Tasks: ",
                 tasksEstimatedMinutesSumText todayTasks,
                 text " (",
                 text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum todayTasks))) / 60)),
                 text " hours)"
-            ]
-            :: List.concat (
-                taskListToHtmlList
-                    model
-                    todayTasks
-            ))
-         else [
-             text "You don't have any tasks for today!",
-             br [] [],
-             text "Go to ",
-             todayLinkButton model,
-             text " to add some!"
-         ]
-     )
+            ],
+            taskListToHtmlTable model todayTasks
+        ])
+        else [
+            text "You don't have any tasks for today!",
+            br [] [],
+            text "Go to ",
+            todayLinkButton model,
+            text " to add some!"
+        ]
+    )
 
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
