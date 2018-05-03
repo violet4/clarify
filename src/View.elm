@@ -3,16 +3,22 @@ module View exposing (view)
 import Round exposing (round)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
-    select, option, map
+    select, option, map, table, tr, td, tbody
     )
-import Html.Attributes exposing (href, style, align, id, type_, value)
+import Html.Attributes exposing (href, style, align, id, type_, value, property, attribute, class)
 import Html.Events exposing (onClick, onSubmit, onInput)
 
 import Msg exposing (..)
 import Model exposing (..)
 
 -- styles ######################################################################
-fullSizeStyle = style [("width", "100%"), ("height", "75%"), ("padding-left", "1%"), ("padding-top", "1%"), ("padding-right", "1%")]
+fullSizeStyle = style [
+    ("width", "98%"),
+    ("height", "75%"),
+    ("padding-left", "1%"),
+    ("padding-top", "1%"),
+    ("padding-right", "1%")
+    ]
 width100p = style [("width", "100%")]
 htmlAppHeader = div [style [
         ("color", "#1D417D"),
@@ -80,36 +86,36 @@ estimatedMinutesSelector task =
     ] []
 
 taskToHtmlDisplay: Model -> Task -> List (Html Msg)
-taskToHtmlDisplay model task =
-    [
-        text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
-        -- delete button
-        button [
-            onClick (DeleteTask task.taskID)
-        ] [text "Delete"],
+taskToHtmlDisplay model task = [
+        div [] [
+            div [] [
+                text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
+                -- delete button
+                button [
+                    onClick (DeleteTask task.taskID)
+                ] [text "Delete"],
 
-        -- "add/remove from today" button
-        if (List.member task.taskID model.todayTaskIds)
-            then button [
-                addRemoveButton150width ,
-                onClick (RemoveToday task.taskID)
-            ] [text "Remove from Today"]
-            else button [
-                addRemoveButton150width,
-                onClick (AddToday task.taskID)
-            ] [text    "Add to Today"],
+                -- "add/remove from today" button
+                if (List.member task.taskID model.todayTaskIds)
+                    then button [
+                        addRemoveButton150width ,
+                        onClick (RemoveToday task.taskID)
+                    ] [text "Remove from Today"]
+                    else button [
+                        addRemoveButton150width,
+                        onClick (AddToday task.taskID)
+                    ] [text    "Add to Today"],
 
-        -- ability to select a life goal for this task
-        (lifeGoalSelectorForEditing model.life_goals task),
-        -- estimated minutes
-        estimatedMinutesSelector task,
-
-        -- task text
-        br [] [],
-        text (
-            --(toString task.taskID) ++
-            task.title),
-        br [] []
+                -- ability to select a life goal for this task
+                (lifeGoalSelectorForEditing model.life_goals task),
+                -- estimated minutes
+                estimatedMinutesSelector task
+            ],
+            div [] [
+                -- task text
+                text task.title
+            ]
+        ]
     ]
 
 sortSelectorButton fieldName =
@@ -135,6 +141,44 @@ taskTodayMatchesViewState model task =
                 _ -> not (List.member task.taskID model.todayTaskIds)
         else True
 
+
+solidBlackBorderStyle = style [
+        ("border", "1px solid black")
+    ]
+
+taskToTableRow model task =
+    tr [] [
+        td [class "taskButtons"] [
+            text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
+            -- delete button
+            button [
+                onClick (DeleteTask task.taskID)
+            ] [text "Delete"],
+
+            -- "add/remove from today" button
+            if (List.member task.taskID model.todayTaskIds)
+                then button [
+                    addRemoveButton150width ,
+                    onClick (RemoveToday task.taskID)
+                ] [text "Remove from Today"]
+                else button [
+                    addRemoveButton150width,
+                    onClick (AddToday task.taskID)
+                ] [text    "Add to Today"],
+
+            -- ability to select a life goal for this task
+            (lifeGoalSelectorForEditing model.life_goals task),
+            -- estimated minutes
+            estimatedMinutesSelector task
+        ],
+        td [solidBlackBorderStyle, class "taskText"] [
+            text task.title
+        ]
+    ]
+
+taskListToHtmlTable model tasks =
+    table [] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
+
 taskListToHtmlList model tasks =
     List.map
         (\task -> taskToHtmlDisplay model task)
@@ -159,14 +203,17 @@ taskView model =
     in
     div [fullSizeStyle]
         (List.append
-            -- sorting buttons
-            ((sortBySelectorButtons model) ::
-            (text "Total Estimated Minutes for All Displayed Tasks: ") ::
-            (tasksEstimatedMinutesSumText sortedTaskViewTasks) ::
-            (text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)")) ::
-            (br [] []) :: (br [] []) ::
-            -- list of current tasks
-            (List.concat (taskListToHtmlList model sortedTaskViewTasks)))
+            [
+                -- sorting buttons
+                sortBySelectorButtons model,
+
+                text "Total Estimated Minutes for All Displayed Tasks: ",
+                tasksEstimatedMinutesSumText sortedTaskViewTasks,
+                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
+                br [] [], br [] [],
+                -- list of current tasks
+                taskListToHtmlTable model sortedTaskViewTasks
+            ]
             -- section to create a new task
             [
                 br [] [],
