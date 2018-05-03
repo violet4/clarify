@@ -83,9 +83,12 @@ taskToHtmlDisplay: Model -> Task -> List (Html Msg)
 taskToHtmlDisplay model task =
     [
         text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
+        -- delete button
         button [
-                onClick (DeleteTask task.taskID)
-            ] [text "Delete"],
+            onClick (DeleteTask task.taskID)
+        ] [text "Delete"],
+
+        -- "add/remove from today" button
         if (List.member task.taskID model.todayTaskIds)
             then button [
                 addRemoveButton150width ,
@@ -95,21 +98,27 @@ taskToHtmlDisplay model task =
                 addRemoveButton150width,
                 onClick (AddToday task.taskID)
             ] [text    "Add to Today"],
-        text (
-            --(toString task.taskID) ++
-            "   Title: " ++ task.title ++ "    "),
+
         -- ability to select a life goal for this task
         (lifeGoalSelectorForEditing model.life_goals task),
         -- estimated minutes
         estimatedMinutesSelector task,
+
+        -- task text
+        br [] [],
+        text (
+            --(toString task.taskID) ++
+            task.title),
         br [] []
     ]
 
 sortSelectorButton fieldName =
     button [onClick (ChangeTaskSorting fieldName)] [text fieldName]
+
 sortBySelectorButtons model =
     div [] [
         text "Sort by: ",
+        sortSelectorButton "None",
         sortSelectorButton "Life Goal",
         sortSelectorButton "Estimated Minutes",
         sortSelectorButton "Description"
@@ -131,22 +140,33 @@ taskListToHtmlList model tasks =
         (\task -> taskToHtmlDisplay model task)
         tasks
 
+sortTasks model tasks =
+    if List.member "Life Goal" model.settings
+    then (List.sortBy .lifeGoalID tasks)
+    else if List.member "Estimated Minutes" model.settings
+    then (List.sortBy .estimatedMinutes tasks)
+    else if List.member "Description" model.settings
+    then (List.sortBy .title tasks)
+    else (List.sortBy .taskID tasks)
+
+
 -- tasks view shows all tasks
 taskView model =
     let
         -- filter based on user preferences
         taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) model.tasks)
+        sortedTaskViewTasks = sortTasks model taskViewTasks
     in
     div [fullSizeStyle]
         (List.append
             -- sorting buttons
             ((sortBySelectorButtons model) ::
             (text "Total Estimated Minutes for All Displayed Tasks: ") ::
-            (tasksEstimatedMinutesSumText taskViewTasks) ::
-            (text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum taskViewTasks))/60)) ++ " hours)")) ::
+            (tasksEstimatedMinutesSumText sortedTaskViewTasks) ::
+            (text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)")) ::
             (br [] []) :: (br [] []) ::
             -- list of current tasks
-            (List.concat (taskListToHtmlList model taskViewTasks)))
+            (List.concat (taskListToHtmlList model sortedTaskViewTasks)))
             -- section to create a new task
             [
                 br [] [],

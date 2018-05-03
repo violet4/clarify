@@ -6,6 +6,12 @@ import Model exposing (..)
 findTaskById tasks taskID =
     List.head (List.filter (\task -> task.taskID /= taskID) tasks)
 
+sortSettings = [
+        "Life Goal",
+        "Estimated Minutes",
+        "Description"
+    ]
+
 -- update the current state, which we use
 -- to decide which view to display.
 -- here we will also need to use "msg" to be able to
@@ -18,11 +24,12 @@ update msg model =
 --        -- action states
 --        LifeGoalsState
         ChangeTaskSorting sortKey ->
-            case sortKey of
-                "Life Goal" -> {model|tasks=(List.sortBy .lifeGoalID model.tasks)} ! []
-                "Estimated Minutes" -> {model|tasks=(List.sortBy .estimatedMinutes model.tasks)} ! []
-                "Description" -> {model|tasks=(List.sortBy .title model.tasks)} ! []
-                _ -> model ! []
+            -- remove the current sort key(s) from settings
+            let cleanedSettings = List.filter (\s -> not (List.member s sortSettings)) model.settings
+            in
+                case sortKey of
+                    "None" -> {model|settings=cleanedSettings} ! []
+                    newKey -> {model|settings=newKey::cleanedSettings} ! []
         ToggleSetting in_text ->
             let
                 settings =
