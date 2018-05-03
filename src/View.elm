@@ -65,10 +65,10 @@ lifeGoalSelectorForCreating life_goals=
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    select [onInput (UpdateTaskGoal task.taskID)] (
+    select [(onInput (UpdateTaskGoal task.taskID))] (
         List.map
-        (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
-        life_goals
+        (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
+        ({title = "Nothing", priorities = [], id = -10} :: life_goals)
     )
 
 estimatedMinutesSelector task =
