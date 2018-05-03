@@ -65,11 +65,10 @@ lifeGoalSelectorForCreating life_goals=
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
     select [onInput (UpdateTaskGoal task.taskID)] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
-        ((getLifeGoal life_goals task.lifeGoalID) :: (List.filter (\goal -> goal.id /= (getLifeGoal life_goals task.lifeGoalID).id) life_goals))
+        life_goals
     )
 
 estimatedMinutesSelector task =
@@ -99,13 +98,11 @@ taskToHtmlDisplay model task =
             --(toString task.taskID) ++
             "   Title: " ++ task.title ++ "    "),
         -- ability to select a life goal for this task
-        -- TODO this will need to pass in the id of the current task so we can map it to the life goal the user selects
         (lifeGoalSelectorForEditing model.life_goals task),
         -- estimated minutes
         estimatedMinutesSelector task,
         br [] []
     ]
-
 
 sortBySelector model =
     div [] [
@@ -114,7 +111,6 @@ sortBySelector model =
         button [onClick (ChangeTaskSorting "Estimated Minutes")] [text "Estimated Minutes"],
         button [onClick (ChangeTaskSorting "Description")] [text "Description"]
         ]
-
 
 addRemoveButton150width = style [("width", "150px")]
 
@@ -140,9 +136,9 @@ taskView model =
     div [fullSizeStyle]
         (List.append
             -- sorting buttons
-            --((sortBySelector model) ::
+            ((sortBySelector model) ::
             -- list of current tasks
-            (List.concat (taskListToHtmlList model model.tasks))
+            (List.concat (taskListToHtmlList model model.tasks)))
             -- section to create a new task
             [
                 br [] [],
