@@ -89,6 +89,11 @@ update msg model =
 --            model |
 --            debug = toString msg
 --            }
+        UpdateTaskLifeGoal taskID lifeGoalID ->
+            {model |
+                debug = "taskID " ++ (toString taskID) ++ "; lifeGoalID " ++ lifeGoalID,
+                tasks =  List.map (\t -> if t.taskID /= taskID then t else {t|lifeGoalID=lifeGoalID}) model.tasks
+            }
         UpdateTaskEstimatedMinutes taskID estMinutesStr ->
             case String.toInt estMinutesStr of
                 Err _ -> model ! []

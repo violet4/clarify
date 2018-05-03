@@ -140,9 +140,9 @@ taskView model =
     div [fullSizeStyle]
         (List.append
             -- sorting buttons
-            ((sortBySelector model) ::
+            --((sortBySelector model) ::
             -- list of current tasks
-            (List.concat (taskListToHtmlList model model.tasks)))
+            (List.concat (taskListToHtmlList model model.tasks))
             -- section to create a new task
             [
                 br [] [],
