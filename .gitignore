@@ -9,3 +9,7 @@ src/main.js
 /design/
 /mica_make.bash
 /other/
+
+# Hovsep
+.idea/
+clarify.iml
