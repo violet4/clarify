@@ -104,13 +104,15 @@ taskToHtmlDisplay model task =
         br [] []
     ]
 
-sortBySelector model =
+sortSelectorButton fieldName =
+    button [onClick (ChangeTaskSorting fieldName)] [text fieldName]
+sortBySelectorButtons model =
     div [] [
         text "Sort by: ",
-        button [onClick (ChangeTaskSorting "Life Goal")] [text "Life Goal"],
-        button [onClick (ChangeTaskSorting "Estimated Minutes")] [text "Estimated Minutes"],
-        button [onClick (ChangeTaskSorting "Description")] [text "Description"]
-        ]
+        sortSelectorButton "Life Goal",
+        sortSelectorButton "Estimated Minutes",
+        sortSelectorButton "Description"
+    ]
 
 addRemoveButton150width = style [("width", "150px")]
 
@@ -136,7 +138,7 @@ taskView model =
     div [fullSizeStyle]
         (List.append
             -- sorting buttons
-            ((sortBySelector model) ::
+            ((sortBySelectorButtons model) ::
             -- list of current tasks
             (List.concat (taskListToHtmlList model model.tasks)))
             -- section to create a new task
