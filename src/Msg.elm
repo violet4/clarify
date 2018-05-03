@@ -23,3 +23,4 @@ type Msg =
     | UpdateDebug
     | SettingsViewState
     | ToggleSetting String
+    | ChangeTaskSorting String

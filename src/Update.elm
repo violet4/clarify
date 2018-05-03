@@ -17,6 +17,12 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
+        ChangeTaskSorting sortKey ->
+            case sortKey of
+                "Life Goal" -> {model|tasks=(List.sortBy .lifeGoalID model.tasks)} ! []
+                "Estimated Minutes" -> {model|tasks=(List.sortBy .estimatedMinutes model.tasks)} ! []
+                "Description" -> {model|tasks=(List.sortBy .title model.tasks)} ! []
+                _ -> model ! []
         ToggleSetting in_text ->
             let
                 settings =

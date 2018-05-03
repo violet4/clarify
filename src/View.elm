@@ -106,6 +106,16 @@ taskToHtmlDisplay model task =
         br [] []
     ]
 
+
+sortBySelector model =
+    div [] [
+        text "Sort by: ",
+        button [onClick (ChangeTaskSorting "Life Goal")] [text "Life Goal"],
+        button [onClick (ChangeTaskSorting "Estimated Minutes")] [text "Estimated Minutes"],
+        button [onClick (ChangeTaskSorting "Description")] [text "Description"]
+        ]
+
+
 addRemoveButton150width = style [("width", "150px")]
 
 taskTodayMatchesViewState: Model -> Task -> Bool
@@ -129,8 +139,10 @@ taskListToHtmlList model tasks =
 taskView model =
     div [fullSizeStyle]
         (List.append
+            -- sorting buttons
+            ((sortBySelector model) ::
             -- list of current tasks
-            (List.concat (taskListToHtmlList model model.tasks))
+            (List.concat (taskListToHtmlList model model.tasks)))
             -- section to create a new task
             [
                 br [] [],
@@ -164,8 +176,8 @@ taskView model =
                     button [type_ "submit" ] [text "Create"]
                 ]
                 -- end form to create a new task
-         ]
-    )
+            ]
+        )
 
 -- today view shows tasks we chose for today
 todayView: Model -> Html Msg
@@ -209,6 +221,7 @@ lifeGoalsView model = div [fullSizeStyle]
               button [type_ "submit"] [text "Create"]
            ]]
      )
+
 
 --navigation: () -> Html msg
 -- navigation should be able to switch us between the states.
