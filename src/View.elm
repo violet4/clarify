@@ -83,7 +83,9 @@ estimatedMinutesSelector task =
     input [
         type_ "number",
         onInput (UpdateTaskEstimatedMinutes task.taskID),
-        value (toString task.estimatedMinutes)
+        value (toString task.estimatedMinutes),
+        Html.Attributes.min "0",
+        Html.Attributes.max "9999"
     ] []
 
 taskToHtmlDisplay: Model -> Task -> List (Html Msg)
@@ -278,7 +280,9 @@ taskView model =
                     text "Time: ",
                     input [
                         type_ "number",
-                        onInput (UpdateTaskRegister "estimatedMinutes")
+                        onInput (UpdateTaskRegister "estimatedMinutes"),
+                        Html.Attributes.min "0",
+                        Html.Attributes.max "9999"
                     ][],
                     text " Minutes",
                     br [] [],
