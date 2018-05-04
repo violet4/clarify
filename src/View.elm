@@ -4,9 +4,13 @@ import Regex
 import Round exposing (round)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
-    select, option, map, table, tr, td, tbody
+    select, option, map, table, tr, td, tbody,
+    textarea
     )
-import Html.Attributes exposing (href, style, align, id, type_, value, property, attribute, class)
+import Html.Attributes exposing (
+  href, style, align, id, type_, value, property, attribute, class,
+  width
+  )
 import Html.Events exposing (onClick, onSubmit, onInput)
 
 import Msg exposing (..)
@@ -122,7 +126,7 @@ taskToHtmlDisplay model task = [
             ],
             div [] [
                 -- task text
-                input [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID)] []
+                textarea [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "100%")]] []
             ]
         ]
     ]
@@ -155,6 +159,8 @@ solidBlackBorderStyle = style [
         ("border", "1px solid black")
     ]
 
+wide99percentStyle = style [("width", "99%")]
+
 taskToTableRow model task =
     tr [] [
         td [class "taskButtons"] [
@@ -180,13 +186,13 @@ taskToTableRow model task =
             -- estimated minutes
             estimatedMinutesSelector task
         ],
-        td [solidBlackBorderStyle, class "taskText"] [
-            input [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID)] []
+        td [wide99percentStyle, class "taskText"] [
+            textarea [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "99%"), ("height", "100%")]] []
         ]
     ]
 
 taskListToHtmlTable model tasks =
-    table [] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
+    table [style [("width", "100%")]] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
 
 taskListToHtmlList model tasks =
     List.map
