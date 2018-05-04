@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Regex
 import Round exposing (round)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
@@ -193,19 +194,63 @@ sortTasks model tasks =
     then (List.sortBy .title tasks)
     else (List.sortBy .taskID tasks)
 
+taskFilterTextInput =
+    input [onInput FilterTasks] []
+
+getFullTaskText: Model -> Task -> String
+getFullTaskText model task =
+    let
+        lifeGoalID = task.lifeGoalID
+        lifeGoalStringList = List.filter (\lg -> lg.id == lifeGoalID) model.life_goals
+        lifeGoal =
+            case List.head lifeGoalStringList of
+                Nothing -> LifeGoal "" [] -1
+                Just lg -> lg
+        lifeGoalString = lifeGoal.title
+    in
+        lifeGoalString ++ " " ++ task.title
+
+taskMatchesFilters: Task -> Model -> List String -> Bool
+taskMatchesFilters task model filterParts =
+    let
+        fullTaskText = getFullTaskText model task
+        fp = List.map (\p -> Regex.contains (Regex.regex p) fullTaskText) filterParts
+    in
+        List.all (\x -> x) fp
+
+filterTasks: List Task -> Model -> List String -> List Task
+filterTasks tasks model settings =
+    let
+        settingsThatStartWithFilter = List.filter (\s -> String.startsWith "filter " s) settings
+        filterFilterString =
+            case List.head settingsThatStartWithFilter of
+                Nothing -> ""
+                Just s -> s
+        fullFilterText = String.dropLeft 7 filterFilterString
+        filterParts = String.split " " fullFilterText
+    in
+        -- need to filter out tasks by the filterParts
+        List.filter (\t -> taskMatchesFilters t model filterParts) tasks
 
 -- tasks view shows all tasks
+taskView: Model -> Html Msg
 taskView model =
     let
         -- filter based on user preferences
         taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) model.tasks)
-        sortedTaskViewTasks = sortTasks model taskViewTasks
+        filteredTaskViewTasks = filterTasks taskViewTasks model model.settings
+        sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
     in
     div [fullSizeStyle]
         (List.append
             [
                 -- sorting buttons
                 sortBySelectorButtons model,
+                br [] [],
+
+                -- filter text input
+                taskFilterTextInput,
+                br [] [],
 
                 text "Total Estimated Minutes for All Displayed Tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,

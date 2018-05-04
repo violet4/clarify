@@ -23,6 +23,9 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
+        FilterTasks filter ->
+            let settingsWithoutFilter = List.filter (\s -> not (String.startsWith "filter " s)) model.settings
+            in {model|settings=("filter " ++ filter)::settingsWithoutFilter} ! []
         ChangeTaskSorting sortKey ->
             -- remove the current sort key(s) from settings
             let cleanedSettings = List.filter (\s -> not (List.member s sortSettings)) model.settings

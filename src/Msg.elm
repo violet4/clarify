@@ -24,3 +24,4 @@ type Msg =
     | SettingsViewState
     | ToggleSetting String
     | ChangeTaskSorting String
+    | FilterTasks String
