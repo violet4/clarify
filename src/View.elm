@@ -76,7 +76,7 @@ lifeGoalSelectorForEditing life_goals task =
     select [(onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
-        ({title = "Nothing", priorities = [], id = -10} :: life_goals)
+        ({title = "Choose a life goal", priorities = [], id = -10} :: life_goals)
     )
 
 estimatedMinutesSelector task =
@@ -253,7 +253,7 @@ taskView model =
                 taskFilterTextInput,
                 br [] [],
 
-                text "Total Estimated Minutes for All Displayed Tasks: ",
+                text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
                 br [] [], br [] [],
@@ -317,7 +317,7 @@ todayView model = div [fullSizeStyle] (
     in if at_least_one_task
         then ([
             div [] [
-                text "Total Estimated Minutes for Today's Tasks: ",
+                text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText filteredTodayTasks,
                 text " (",
                 text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum filteredTodayTasks))) / 60)),
