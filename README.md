@@ -5,8 +5,6 @@ See it here: https://mica5.github.io/clarify/
 
 Implemented in Elm (http://elm-lang.org/)
 
-Project instructions at http://horstmann.com/sjsu/spring2018/cs152/project/index.html
-
 ## Install:
 
 Install elm for your platform from https://guide.elm-lang.org/install.html  
@@ -16,7 +14,12 @@ Clone this repository
 
 Build the project
 
-    # this creates src/main.js
+    # this creates js/main.js
     bash ./build.bash
 
 Open index.html in your favorite browser. Unless your favorite browser is IE. Then open it in your second-favorite browser.
+
+## About
+This project is for the Spring 2018 semester at San Jose State University with Professor Horstmann in CS152 Programming Paradigms.
+
+Project instructions at http://horstmann.com/sjsu/spring2018/cs152/project/index.html
