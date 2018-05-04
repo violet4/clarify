@@ -1,1 +1,17 @@
-elm-package.json
+{
+    "version": "1.0.0",
+    "summary": "Todo app to focus on high-importance goals, break them into completable tasks",
+    "repository": "https://github.com/mica5/clarify.git",
+    "license": "BSD3",
+    "source-directories": [
+        "src",
+        "test"
+    ],
+    "exposed-modules": [],
+    "dependencies": {
+        "elm-lang/core": "5.1.1 <= v < 6.0.0",
+        "elm-lang/html": "2.0.0 <= v < 3.0.0",
+        "myrho/elm-round": "1.0.2 <= v < 2.0.0"
+    },
+    "elm-version": "0.18.0 <= v < 0.19.0"
+}
