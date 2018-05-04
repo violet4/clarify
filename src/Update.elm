@@ -104,6 +104,13 @@ update msg model =
 --            model |
 --            debug = toString msg
 --            }
+        UpdateTaskDescription taskID newDescription ->
+            case newDescription of
+                "" -> model ! []
+                _ -> {model |
+                        debug = "taskID " ++ (toString taskID) ++ "; title " ++ newDescription,
+                        tasks = List.map (\t -> if t.taskID /= taskID then t else {t|title=newDescription}) model.tasks
+                     } ! []
         UpdateTaskEstimatedMinutes taskID estMinutesStr ->
             case String.toInt estMinutesStr of
                 Err _ -> model ! []

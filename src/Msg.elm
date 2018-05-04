@@ -12,6 +12,7 @@ type Msg =
     | CreateTaskState
     | CreateTask
     | UpdateCreateLifeGoalRegister String
+    | UpdateTaskDescription Int String
     | UpdateTaskEstimatedMinutes Int String
     | UpdateTaskRegister String String
     | UpdateTaskGoal Int String

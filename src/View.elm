@@ -122,7 +122,7 @@ taskToHtmlDisplay model task = [
             ],
             div [] [
                 -- task text
-                text task.title
+                input [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID)] []
             ]
         ]
     ]
@@ -181,7 +181,7 @@ taskToTableRow model task =
             estimatedMinutesSelector task
         ],
         td [solidBlackBorderStyle, class "taskText"] [
-            text task.title
+            input [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID)] []
         ]
     ]
 
