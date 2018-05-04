@@ -53,10 +53,16 @@ settingsButton model name helpText =
 settingsView: Model -> Html Msg
 settingsView model =
     div [fullSizeStyle] [
-        settingsButton
+        (settingsButton
             model
             "Hide today tasks from tasks page"
             "When you add a task to today from the today page, it will no longer display on the tasks page"
+        ),
+        (settingsButton
+            model
+            "Show debug info"
+            "Contains all info about your tasks and life goals"
+        )
     ]
 
 getLifeGoal goals goalId = 
@@ -92,7 +98,7 @@ taskToHtmlDisplay: Model -> Task -> List (Html Msg)
 taskToHtmlDisplay model task = [
         div [] [
             div [] [
-                text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
+                text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
                 -- delete button
                 button [
                     onClick (DeleteTask task.taskID)
@@ -152,7 +158,7 @@ solidBlackBorderStyle = style [
 taskToTableRow model task =
     tr [] [
         td [class "taskButtons"] [
-            text (if model.showDebug then ((toString task.taskID) ++ " ") else ""),
+            text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
             -- delete button
             button [
                 onClick (DeleteTask task.taskID)
@@ -389,9 +395,9 @@ htmlNavigationBar model = div [] [
         text " ",
         lifeGoalsLinkButton model,
         text " ",
-        settingsLinkButton model,
-        text " ",
-        a [href "#", onClick UpdateDebug] [text "Debug"]
+        settingsLinkButton model--,
+        --text " ",
+        --a [href "#", onClick UpdateDebug] [text "Debug"]
     ]
 
 lifeGoalsLinkButton model =
@@ -450,11 +456,11 @@ mainViewHtmlNavigationBar = div [] [
 view: Model -> Html Msg
 view model =
     div [fullSizeStyle] [
-        text (if model.showDebug then (toString model.debug) else ""),
+        text (if List.member "Show debug info" model.settings then (toString model.debug) else ""),
         htmlAppHeader,
         htmlNavigationBar model,
         hr [] [],
-        text (if model.showDebug then (toString model) else ""),
-        if model.showDebug then hr [] [] else text "",
+        text (if List.member "Show debug info" model.settings then (toString model) else ""),
+        if List.member "Show debug info" model.settings then hr [] [] else text "",
         currentView model
     ]

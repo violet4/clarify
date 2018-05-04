@@ -139,7 +139,6 @@ update msg model =
             tasks = List.filter (\task -> task.taskID /= id) model.tasks
             } ! []
 
-        UpdateDebug -> {model|showDebug=not model.showDebug} ! []
         AddToday taskID ->
             {model|todayTaskIds=taskID :: model.todayTaskIds} ! []
         RemoveToday taskID ->

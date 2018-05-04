@@ -59,8 +59,6 @@ defaultModel = Model
     3 -- taskID
     "" -- new_life_goal_title
     (createEmptyTask 2)
-    -- showDebug
-    False
     -- state
     "TodayState"
     -- settings
