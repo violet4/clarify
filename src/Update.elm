@@ -133,6 +133,13 @@ update msg model =
             debug = toString msg,
             lifeGoalID = model.lifeGoalID
             } ! []
+        UpdateLifeGoalDescription lifeGoalID newDescription ->
+            case newDescription of
+                "" -> model ! []
+                _ -> {model |
+                        debug = "lifeGoalID " ++ (toString lifeGoalID) ++ "; title " ++ newDescription,
+                        life_goals = List.map (\g -> if g.id /= lifeGoalID then g else {g|title=newDescription}) model.life_goals
+                     } ! []
         -- TODO if user deletes all life goals, what should we do to the tasks marked as that life goal?
         DeleteLifeGoal id -> {
             model |

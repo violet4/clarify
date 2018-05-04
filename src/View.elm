@@ -352,7 +352,7 @@ lifeGoalElement lifeGoal =
     div [width100p] [
         button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"],
         text " ",
-        text lifeGoal.title
+        input [Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
 
 lifeGoalsView: Model -> Html Msg
