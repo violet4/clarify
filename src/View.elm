@@ -249,6 +249,7 @@ taskView model =
                 br [] [],
 
                 -- filter text input
+                text "Filter Tasks: ",
                 taskFilterTextInput,
                 br [] [],
 
@@ -323,6 +324,7 @@ todayView model = div [fullSizeStyle] (
                 text " hours)"
             ],
             -- filter text input
+            text "Filter Tasks: ",
             taskFilterTextInput,
             taskListToHtmlTable model filteredTodayTasks
         ])
