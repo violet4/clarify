@@ -312,16 +312,19 @@ todayView model = div [fullSizeStyle] (
     let
         at_least_one_task = ((List.length model.todayTaskIds) > 0)
         todayTasks = List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks
+        filteredTodayTasks = filterTasks todayTasks model model.settings
     in if at_least_one_task
         then ([
             div [] [
                 text "Total Estimated Minutes for Today's Tasks: ",
-                tasksEstimatedMinutesSumText todayTasks,
+                tasksEstimatedMinutesSumText filteredTodayTasks,
                 text " (",
-                text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum todayTasks))) / 60)),
+                text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum filteredTodayTasks))) / 60)),
                 text " hours)"
             ],
-            taskListToHtmlTable model todayTasks
+            -- filter text input
+            taskFilterTextInput,
+            taskListToHtmlTable model filteredTodayTasks
         ])
         else [
             text "You don't have any tasks for today!",
@@ -335,9 +338,9 @@ todayView model = div [fullSizeStyle] (
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
     div [width100p] [
-        text lifeGoal.title,
+        button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"],
         text " ",
-        button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"]
+        text lifeGoal.title
     ]
 
 lifeGoalsView: Model -> Html Msg

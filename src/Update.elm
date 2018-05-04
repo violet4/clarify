@@ -12,6 +12,10 @@ sortSettings = [
         "Description"
     ]
 
+
+resetFilter settings =
+    List.map (\s -> if String.startsWith "filter " s then "filter " else s) settings
+
 -- update the current state, which we use
 -- to decide which view to display.
 -- here we will also need to use "msg" to be able to
@@ -143,7 +147,11 @@ update msg model =
         -- even if we don't know what the input was,
         -- we should still update the state in case
         -- user clicked on another tab!
-        _ -> {model | debug = toString msg, state=toString msg} ! []
+        _ -> {model |
+            debug = toString msg,
+            state=toString msg,
+            settings = resetFilter (model.settings)
+            } ! []
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }
 -- we need a "msg" that enumerates the actions we could take at this step,
