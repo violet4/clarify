@@ -25,6 +25,7 @@ fullSizeStyle = style [
     ("padding-top", "1%"),
     ("padding-right", "1%")
     ]
+    
 width100p = style [("width", "100%")]
 
 centeredLayout : List Style
@@ -47,6 +48,8 @@ htmlAppHeader = div [style [ display flex_
 redFont = style [color "red", fontFamily "sans-serif", fontWeight "bold", fontSize "17px"]
 noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 
+buttonStyle = style [fontFamily "sans-serif", fontWeight "600", backgroundImage (url "buttonBack.png")]
+
 currentView model =
     case model.state of
         -- each of these takes a model
@@ -59,7 +62,7 @@ currentView model =
 
 settingsButton model name helpText =
     div [] [
-        button [onClick (ToggleSetting name)] [
+        button [buttonStyle, onClick (ToggleSetting name)] [
             text (if (List.member name model.settings)
                 then "Turn off"
                 else "Turn on"
@@ -90,7 +93,7 @@ getLifeGoal goals goalId =
 
 lifeGoalSelectorForCreating life_goals=
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
-    select [onInput ((UpdateTaskRegister "lifeGoal"))] (
+    select [addRemoveButton150width, onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
         ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
@@ -100,7 +103,7 @@ lifeGoalSelectorForEditing life_goals task =
     select [(onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
-        ({title = "Choose a life goal", priorities = [], id = -10} :: life_goals)
+        life_goals
     )
 
 estimatedMinutesSelector task =
@@ -109,7 +112,8 @@ estimatedMinutesSelector task =
         onInput (UpdateTaskEstimatedMinutes task.taskID),
         value (toString task.estimatedMinutes),
         Html.Attributes.min "0",
-        Html.Attributes.max "9999"
+        Html.Attributes.max "9999",
+        addRemoveButton150width
     ] []
 
 taskToHtmlDisplay: Model -> Task -> List (Html Msg)
@@ -118,16 +122,16 @@ taskToHtmlDisplay model task = [
             div [] [
                 text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
                 -- delete button
-                button [
+                button [ buttonStyle,
                     onClick (DeleteTask task.taskID)
                 ] [text "Delete"],
                 -- "add/remove from today" button
                 if (List.member task.taskID model.todayTaskIds)
-                    then button [
+                    then button [buttonStyle,
                         addRemoveButton150width ,
                         onClick (RemoveToday task.taskID)
                     ] [text "Remove from Today"]
-                    else button [
+                    else button [buttonStyle,
                         addRemoveButton150width,
                         onClick (AddToday task.taskID)
                     ] [text    "Add to Today"],
@@ -145,7 +149,7 @@ taskToHtmlDisplay model task = [
     ]
 
 sortSelectorButton fieldName =
-    button [onClick (ChangeTaskSorting fieldName)] [text fieldName]
+    button [buttonStyle, onClick (ChangeTaskSorting fieldName)] [text fieldName]
 
 sortBySelectorButtons model =
     div [] [
@@ -156,7 +160,7 @@ sortBySelectorButtons model =
         sortSelectorButton "Description"
     ]
 
-addRemoveButton150width = style [("width", "150px")]
+addRemoveButton150width = style [Style.width "150px", alignItems "center"]
 
 taskTodayMatchesViewState: Model -> Task -> Bool
 taskTodayMatchesViewState model task =
@@ -179,17 +183,17 @@ taskToTableRow model task =
         td [class "taskButtons"] [
             text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
             -- delete button
-            button [
+            button [ buttonStyle, addRemoveButton150width,
                 onClick (DeleteTask task.taskID)
             ] [text "Delete"],
 
             -- "add/remove from today" button
             if (List.member task.taskID model.todayTaskIds)
-                then button [
+                then button [buttonStyle,
                     addRemoveButton150width ,
                     onClick (RemoveToday task.taskID)
                 ] [text "Remove from Today"]
-                else button [
+                else button [buttonStyle,
                     addRemoveButton150width,
                     onClick (AddToday task.taskID)
                 ] [text    "Add to Today"],
@@ -320,7 +324,7 @@ taskView model =
 
                     br [] [],
                     br [] [],
-                    button [type_ "submit" ] [text "Create"]
+                    button [buttonStyle, type_ "submit" ] [text "Create"]
                 ]
                 -- end form to create a new task
             ]
@@ -370,7 +374,7 @@ todayView model = div [fullSizeStyle] (
 lifeGoalElement: LifeGoal -> Html Msg
 lifeGoalElement lifeGoal =
     div [width100p] [
-        button [(onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"],
+        button [buttonStyle, (onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"],
         text " ",
         input [Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
@@ -392,7 +396,7 @@ lifeGoalsView model = div [fullSizeStyle]
               ] [],
               br [] [],
               br [] [],
-              button [type_ "submit"] [text "Create"]
+              button [buttonStyle, type_ "submit"] [text "Create"]
            ]]
      )
 
@@ -402,6 +406,7 @@ lifeGoalsView model = div [fullSizeStyle]
 htmlNavigationBar model = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
+        
         a [
             -- these links don't take us anywhere yet,
             -- but at least we can click them.
@@ -418,6 +423,7 @@ htmlNavigationBar model = div [] [
         settingsLinkButton model--,
         --text " ",
         --a [href "#", onClick UpdateDebug] [text "Debug"]
+        
     ]
 
 lifeGoalsLinkButton model =
