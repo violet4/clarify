@@ -27,3 +27,6 @@ type Msg =
     | ToggleSetting String
     | ChangeTaskSorting String
     | FilterTasks String
+    | ViewSubTasks Int
+    | UpOneLevel
+    | TopLevel

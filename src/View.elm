@@ -25,7 +25,7 @@ fullSizeStyle = style [
     ("padding-top", "1%"),
     ("padding-right", "1%")
     ]
-    
+
 width100p = style [("width", "100%")]
 
 centeredLayout : List Style
@@ -165,7 +165,8 @@ taskToTableRow model task =
             -- delete button
             button [ buttonStyle, addRemoveButton150width,
             onClick (DeleteTask task.taskID)
-            ] [text "Delete"]
+            ] [text "Delete"],
+            button [onClick (ViewSubTasks task.taskID)] [text "View Subtasks"]
         ],
         td [class "taskInfo"][
             -- ability to select a life goal for this task
@@ -234,8 +235,9 @@ filterTasks tasks model settings =
 taskView: Model -> Html Msg
 taskView model =
     let
+        tasksFromThisParent = List.filter (\t -> t.parentTaskId == model.viewingParentTaskId) model.tasks
         -- filter based on user preferences
-        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) model.tasks)
+        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) tasksFromThisParent)
         filteredTaskViewTasks = filterTasks taskViewTasks model model.settings
         sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
     in
@@ -254,6 +256,10 @@ taskView model =
                 text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
+                br [] [],
+                --
+                button [onClick UpOneLevel] [text "Up one level"],
+                button [onClick TopLevel] [text "Top Level"],
                 br [] [], br [] [],
                 -- list of current tasks
                 taskListToHtmlTable model sortedTaskViewTasks

@@ -1,16 +1,16 @@
 module Model exposing (..)
 
-createEmptyTask taskID = Task "" False 0 taskID -1
--- don't use this in place of a real task.
-emptyTask = createEmptyTask -1
+createEmptyTask: Int -> Int -> Task
+createEmptyTask taskID parentTaskID = Task "" False -1 taskID 0 parentTaskID
 
-
+type alias LifeGoalID = Int
 type alias Task = {
     title: String
     , complete: Bool
-    , estimatedMinutes: Int
-    , taskID: Int
     , lifeGoalID: LifeGoalID
+    , taskID: Int
+    , estimatedMinutes: Int
+    , parentTaskId: Int
     }
 
 type alias Today = {
@@ -21,7 +21,6 @@ type alias Priority = {
     tasks: List Task,
     id: Int
     }
-type alias LifeGoalID = Int
 type alias LifeGoal = {
     title: String,
     priorities: List Priority,
@@ -37,5 +36,6 @@ type alias Model = {
     new_life_goal_title: String,
     newTaskRegister: Task,
     state: String,
-    settings: List String
+    settings: List String,
+    viewingParentTaskId: Int
     }
