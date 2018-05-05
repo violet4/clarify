@@ -26,7 +26,7 @@ fullSizeStyle = style [
     ("padding-right", "1%")
     ]
     
-width100p = style [("width", "100%")]
+width100p = style [("width", "100%"), textAlign "center"]
 
 centeredLayout : List Style
 centeredLayout =
@@ -48,7 +48,7 @@ htmlAppHeader = div [style [ display flex_
 redFont = style [color "red", fontFamily "sans-serif", fontWeight "bold", fontSize "17px"]
 noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 
-buttonStyle = style [fontFamily "sans-serif", fontWeight "600", backgroundImage (url "buttonBack.png")]
+buttonStyle = style [fontWeight "600", borderRadius "10px", padding "6px", paddingLeft "10px", paddingRight "10px", backgroundColor "#1D417D", color "white"]
 
 currentView model =
     case model.state of
@@ -100,7 +100,7 @@ lifeGoalSelectorForCreating life_goals=
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    select [(onInput (UpdateTaskGoal task.taskID))] (
+    select [width100p, (onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
@@ -115,38 +115,6 @@ estimatedMinutesSelector task =
         Html.Attributes.max "9999",
         addRemoveButton150width
     ] []
-
-taskToHtmlDisplay: Model -> Task -> List (Html Msg)
-taskToHtmlDisplay model task = [
-        div [] [
-            div [] [
-                text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
-                -- delete button
-                button [ buttonStyle,
-                    onClick (DeleteTask task.taskID)
-                ] [text "Delete"],
-                -- "add/remove from today" button
-                if (List.member task.taskID model.todayTaskIds)
-                    then button [buttonStyle,
-                        addRemoveButton150width ,
-                        onClick (RemoveToday task.taskID)
-                    ] [text "Remove from Today"]
-                    else button [buttonStyle,
-                        addRemoveButton150width,
-                        onClick (AddToday task.taskID)
-                    ] [text    "Add to Today"],
-
-                -- ability to select a life goal for this task
-                (lifeGoalSelectorForEditing model.life_goals task),
-                -- estimated minutes
-                estimatedMinutesSelector task
-            ],
-            div [] [
-                -- task text
-                textarea [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "100%")]] []
-            ]
-        ]
-    ]
 
 sortSelectorButton fieldName =
     button [buttonStyle, onClick (ChangeTaskSorting fieldName)] [text fieldName]
@@ -182,10 +150,6 @@ taskToTableRow model task =
     tr [] [
         td [class "taskButtons"] [
             text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
-            -- delete button
-            button [ buttonStyle, addRemoveButton150width,
-                onClick (DeleteTask task.taskID)
-            ] [text "Delete"],
 
             -- "add/remove from today" button
             if (List.member task.taskID model.todayTaskIds)
@@ -198,6 +162,12 @@ taskToTableRow model task =
                     onClick (AddToday task.taskID)
                 ] [text    "Add to Today"],
 
+            -- delete button
+            button [ buttonStyle, addRemoveButton150width,
+            onClick (DeleteTask task.taskID)
+            ] [text "Delete"]
+        ],
+        td [class "taskInfo"][
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
             -- estimated minutes
@@ -212,10 +182,6 @@ taskToTableRow model task =
 taskListToHtmlTable model tasks =
     Html.table [style [("width", "100%")]] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
 
-taskListToHtmlList model tasks =
-    List.map
-        (\task -> taskToHtmlDisplay model task)
-        tasks
 
 sortTasks model tasks =
     if List.member "Life Goal" model.settings
