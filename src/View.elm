@@ -258,8 +258,9 @@ taskView model =
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
                 br [] [],
                 --
-                button [onClick UpOneLevel] [text "Up one level"],
                 button [onClick TopLevel] [text "Top Level"],
+                br [] [],
+                button [onClick UpOneLevel] [text "Up one level"],
                 br [] [], br [] [],
                 -- list of current tasks
                 taskListToHtmlTable model sortedTaskViewTasks

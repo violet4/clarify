@@ -139,14 +139,18 @@ update msg model =
                         , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=estimatedMinutes}) model.tasks
                         } ! []
         -- don't let user create empty task
-        CreateTask -> if model.newTaskRegister.title == "" then model ! [] else {
-            model |
+        CreateTask -> if model.newTaskRegister.title == "" then model ! [] else
+            let
+                newTaskRegister = model.newTaskRegister
+                updatedNewTask = {newTaskRegister|parentTaskId=model.viewingParentTaskId}
+            in
+            {model |
 --                title: String
 --                , complete: Bool
 --                , estimatedMinutes: Int
 --                , taskID: Int
 
-            tasks = List.append model.tasks [model.newTaskRegister],
+            tasks = List.append model.tasks [updatedNewTask],
             newTaskRegister = createEmptyTask model.taskID 0,
             taskID = model.taskID + 1,
             debug = toString msg,
