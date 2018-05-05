@@ -26,7 +26,7 @@ fullSizeStyle = style [
     ("padding-right", "1%")
     ]
     
-width100p = style [("width", "100%"), textAlign "center"]
+width100p = style [("width", "100%")]
 
 centeredLayout : List Style
 centeredLayout =
