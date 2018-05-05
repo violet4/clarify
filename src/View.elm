@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Regex
 import Round exposing (round)
+import Style exposing (..)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option, map, table, tr, td, tbody,
@@ -25,14 +26,26 @@ fullSizeStyle = style [
     ("padding-right", "1%")
     ]
 width100p = style [("width", "100%")]
-htmlAppHeader = div [style [
-        ("color", "#1D417D"),
-        ("font-size", "30px"),
-        ("padding-left", "40%")
-    ]] [text "Clarify"]
 
-redFont = style [("color", "red")]
-noStyle = style []
+centeredLayout : List Style
+centeredLayout =
+  [ display flex_
+  , justifyContent center
+  , alignItems center
+  ]
+
+htmlAppHeader = div [style [ display flex_
+  , justifyContent center
+  , alignItems center
+  , color "#1D417D"
+  , fontSize "30px"
+  , fontFamily "sans-serif"
+  , fontWeight "bold"
+  ]] [text "Clarify"]
+
+
+redFont = style [color "red", fontFamily "sans-serif", fontWeight "bold", fontSize "17px"]
+noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 
 currentView model =
     case model.state of
@@ -50,7 +63,8 @@ settingsButton model name helpText =
             text (if (List.member name model.settings)
                 then "Turn off"
                 else "Turn on"
-            )],
+            )
+            ],
         text (" " ++ name ++ ": " ++ helpText)
     ]
 
@@ -107,7 +121,6 @@ taskToHtmlDisplay model task = [
                 button [
                     onClick (DeleteTask task.taskID)
                 ] [text "Delete"],
-
                 -- "add/remove from today" button
                 if (List.member task.taskID model.todayTaskIds)
                     then button [
@@ -191,8 +204,9 @@ taskToTableRow model task =
         ]
     ]
 
+
 taskListToHtmlTable model tasks =
-    table [style [("width", "100%")]] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
+    Html.table [style [("width", "100%")]] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
 
 taskListToHtmlList model tasks =
     List.map
