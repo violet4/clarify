@@ -54,6 +54,8 @@ if (startingState.version == undefined) {
     startingState.tasks.map(function(task){
         task.parentTaskId = -1;
     });
+    startingState.newTaskRegister.parentTaskId = -1;
+    startingState.settings = [];
 }
 
 // if (startingState.version == 0) {
