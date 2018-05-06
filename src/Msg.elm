@@ -5,6 +5,7 @@ type Msg =
     TodayState
     | CreateState
     | TaskState
+    | HelpState
     | LifeGoalState
     -- action states
     | CreateLifeGoal

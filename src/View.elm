@@ -6,7 +6,7 @@ import Style exposing (..)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option, map, table, tr, td, tbody,
-    textarea
+    textarea, ul, li
     )
 import Html.Attributes exposing (
   href, style, align, id, type_, value, property, attribute, class,
@@ -58,7 +58,13 @@ currentView model =
         "LifeGoalsState" -> lifeGoalsView model
         "LifeGoalState" -> lifeGoalsView model
         "SettingsViewState" -> settingsView model
+        "HelpState" -> helpView
         _ -> todayView model
+
+helpView = ul [] [
+        li [] [text
+            "In the \"View Subtasks\" button (e.g. \"View Subtasks (4/10)\"), the first number 4 is the number of direct subtasks, and the second number 10 is the total number of recursive subtasks"]
+    ]
 
 settingsButton model name helpText =
     div [] [
@@ -161,9 +167,6 @@ countAllSubtasks tasks taskID =
             (\thisTaskId count -> count + (countAllSubtasks tasks thisTaskId))
             directSubtaskIdCount
             directSubtaskIds
-
-
-
 
 taskToTableRow model task =
     tr [] [
@@ -419,11 +422,20 @@ htmlNavigationBar model = div [] [
         text " ",
         lifeGoalsLinkButton model,
         text " ",
-        settingsLinkButton model--,
+        settingsLinkButton model,
+        text " ",
+        helpLinkButton model
         --text " ",
         --a [href "#", onClick UpdateDebug] [text "Debug"]
         
     ]
+
+helpLinkButton model =
+    a [
+        (href "#"),
+        (onClick HelpState),
+        (if model.state == "HelpState" then redFont else noStyle)
+    ] [text "Help"]
 
 lifeGoalsLinkButton model =
     a [
