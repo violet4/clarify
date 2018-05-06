@@ -188,7 +188,7 @@ taskToTableRow model task =
                 ] [text "Add to Today"],
 
             -- delete button
-            button [buttonStyle, addRemoveButton150width,
+            button [buttonStyle,
                 onClick (DeleteTask task.taskID)
             ] [text "Delete"],
             button [
