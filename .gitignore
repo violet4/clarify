@@ -13,4 +13,4 @@ src/main.js
 # Hovsep
 .idea/
 clarify.iml/
-js/main.js
+*.js
