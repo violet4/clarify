@@ -146,6 +146,25 @@ solidBlackBorderStyle = style [
 
 wide99percentStyle = style [("width", "99%")]
 
+countDirectSubtasks tasks taskID =
+    List.length (List.filter (\t -> t.parentTaskId == taskID) tasks)
+
+countAllSubtasks tasks taskID =
+    let
+        directSubtasks = List.filter (\t -> t.parentTaskId == taskID) tasks
+        directSubtaskIds = List.map (\t -> t.taskID) directSubtasks
+        directSubtaskIdCount = List.length directSubtaskIds
+    in
+        if directSubtaskIdCount == 0
+        then 0
+        else List.foldr
+            (\thisTaskId count -> count + (countAllSubtasks tasks thisTaskId))
+            directSubtaskIdCount
+            directSubtaskIds
+
+
+
+
 taskToTableRow model task =
     tr [] [
         td [class "taskButtons"] [
@@ -166,7 +185,14 @@ taskToTableRow model task =
             button [ buttonStyle, addRemoveButton150width,
             onClick (DeleteTask task.taskID)
             ] [text "Delete"],
-            button [onClick (ViewSubTasks task.taskID)] [text "View Subtasks"]
+            button [
+                onClick (ViewSubTasks task.taskID)
+            ] [text (
+                "View Subtasks ("
+                ++ (toString (countDirectSubtasks model.tasks task.taskID))
+                ++ "/"
+                ++ (toString (countAllSubtasks model.tasks task.taskID))
+                ++ ")")]
         ],
         td [class "taskInfo"][
             -- ability to select a life goal for this task
