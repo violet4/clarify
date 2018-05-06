@@ -23,7 +23,46 @@
 
 <script type="text/javascript">
 var storedState = localStorage.getItem('elm-todo-save');
+
+
+/********* MODEL UPDATES **********
+
+as the elm model has changed, users who visit the app at a later
+date previously would have found the app to be completely broken.
+this is a routine to update the saved javascript model to the
+newest version of the elm model to keep compatibility, so that
+we can update the elm model without worrying about breaking on
+user's devices.
+
+each version of the model has a model version number. the model
+must be updated from one version to the next, incrementally,
+until it reaches the current model number.
+
+if an attribute is removed from the model and then added back in a
+later version, don't skip a step. always follow all the steps -
+first delete the attribute, then let the later step add it back.
+don't try to skip steps.
+
+**********************************/
+
 var startingState = storedState ? JSON.parse(storedState) : null;
+
+// update from pre-version-ids to version 0
+if (startingState.version == undefined) {
+    startingState.version = 0;
+    startingState.viewingParentTaskId = -1;
+    startingState.tasks.map(function(task){
+        task.parentTaskId = -1;
+    });
+}
+
+// if (startingState.version == 0) {
+//     // once we move from version 0 to version 1, we need
+//     // to populate this with the updates.
+// }
+
+
+
 var todomvc = Elm.Main.fullscreen(startingState);
 todomvc.ports.save.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));

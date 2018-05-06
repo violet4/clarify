@@ -37,5 +37,6 @@ type alias Model = {
     newTaskRegister: Task,
     state: String,
     settings: List String,
-    viewingParentTaskId: Int
+    viewingParentTaskId: Int,
+    version: Int
     }
