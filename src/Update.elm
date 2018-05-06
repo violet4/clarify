@@ -134,9 +134,15 @@ update msg model =
             case String.toInt estMinutesStr of
                 Err _ -> model ! []
                 Ok estimatedMinutes ->
+                    let
+                        checkedEstimatedMinutes =
+                            if estimatedMinutes < 0 then 0
+                            else if estimatedMinutes > 9999 then 9999
+                            else estimatedMinutes
+                    in
                     {model |
                         debug = "taskID " ++ (toString taskID) ++ "; estMinutesStr " ++ estMinutesStr
-                        , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=estimatedMinutes}) model.tasks
+                        , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=checkedEstimatedMinutes}) model.tasks
                         } ! []
         -- don't let user create empty task
         CreateTask -> if model.newTaskRegister.title == "" then model ! [] else
