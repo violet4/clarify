@@ -50,6 +50,8 @@ noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 
 buttonStyle = style [fontWeight "600", borderRadius "10px", padding "6px", paddingLeft "10px", paddingRight "10px", backgroundColor "#1D417D", color "white"]
 
+inputStyle = style[ borderRadius "6px", padding "5px"]
+
 currentView model =
     case model.state of
         -- each of these takes a model
@@ -93,14 +95,14 @@ getLifeGoal goals goalId =
 
 lifeGoalSelectorForCreating life_goals=
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
-    select [addRemoveButton150width, onInput ((UpdateTaskRegister "lifeGoal"))] (
+    select [inputStyle, style [borderRadius "6px", padding "6px"], onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
         ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    select [width100p, (onInput (UpdateTaskGoal task.taskID))] (
+    select [inputStyle, width100p, (onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
@@ -108,6 +110,7 @@ lifeGoalSelectorForEditing life_goals task =
 
 estimatedMinutesSelector task =
     input [
+        inputStyle,
         type_ "number",
         onInput (UpdateTaskEstimatedMinutes task.taskID),
         value (toString task.estimatedMinutes),
@@ -163,7 +166,7 @@ taskToTableRow model task =
                 ] [text    "Add to Today"],
 
             -- delete button
-            button [ buttonStyle, addRemoveButton150width,
+            button [buttonStyle, addRemoveButton150width,
             onClick (DeleteTask task.taskID)
             ] [text "Delete"]
         ],
@@ -174,13 +177,13 @@ taskToTableRow model task =
             estimatedMinutesSelector task
         ],
         td [wide99percentStyle, class "taskText"] [
-            textarea [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "99%"), ("height", "100%")]] []
+            textarea [inputStyle, style [height "100%"],Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "99%"), ("height", "100%")]] []
         ]
     ]
 
 
 taskListToHtmlTable model tasks =
-    Html.table [style [("width", "100%")]] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
+    Html.table [inputStyle, width100p] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
 
 
 sortTasks model tasks =
@@ -193,7 +196,7 @@ sortTasks model tasks =
     else (List.sortBy .taskID tasks)
 
 taskFilterTextInput =
-    input [onInput FilterTasks] []
+    input [inputStyle,onInput FilterTasks] []
 
 getFullTaskText: Model -> Task -> String
 getFullTaskText model task =
@@ -239,7 +242,7 @@ taskView model =
         filteredTaskViewTasks = filterTasks taskViewTasks model model.settings
         sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
     in
-    div [fullSizeStyle]
+    div [fullSizeStyle] 
         (List.append
             [
                 -- sorting buttons
@@ -247,16 +250,18 @@ taskView model =
                 br [] [],
 
                 -- filter text input
-                text "Filter Tasks: ",
+                text "Search Task: ",
                 taskFilterTextInput,
+
+                br [] [], br [] [],
+                -- list of current tasks
+                taskListToHtmlTable model sortedTaskViewTasks,
+
                 br [] [],
 
                 text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
-                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
-                br [] [], br [] [],
-                -- list of current tasks
-                taskListToHtmlTable model sortedTaskViewTasks
+                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)")
             ]
             -- section to create a new task
             [
@@ -275,6 +280,7 @@ taskView model =
                     br [] [],
                     text "Time: ",
                     input [
+                        inputStyle,
                         type_ "number",
                         onInput (UpdateTaskRegister "estimatedMinutes"),
                         Html.Attributes.min "0",
@@ -285,6 +291,7 @@ taskView model =
                     br [] [],
                     text "Description: ",
                     input [
+                        inputStyle,
                         onInput (UpdateTaskRegister "description")
                     ] [],
 
@@ -342,7 +349,7 @@ lifeGoalElement lifeGoal =
     div [width100p] [
         button [buttonStyle, (onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"],
         text " ",
-        input [Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
+        input [inputStyle, Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
 
 lifeGoalsView: Model -> Html Msg
@@ -358,6 +365,7 @@ lifeGoalsView model = div [fullSizeStyle]
             form [onSubmit CreateLifeGoal] [
                 text "Description: ",
                 input [
+                inputStyle,
                   onInput UpdateCreateLifeGoalRegister
               ] [],
               br [] [],
@@ -426,7 +434,7 @@ mainViewHtmlNavigationBar = div [] [
         -- or something of the like
         a [
             -- these links don't take us anywhere yet,
-            -- but at least we can click them.
+            -- but at least we can click them.         
             (href "#"),
             (onClick TodayState)
         ] [text "Today"],
