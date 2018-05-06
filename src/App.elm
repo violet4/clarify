@@ -43,13 +43,9 @@ defaultModel = Model
     []
     -- tasks
     [
-        (Task "clean desk" False 0 0 -1),
-         Task
-             "vacuum room" -- title
-             False -- complete
-             0 -- estimatedMinutes
-             1 -- taskID
-             -1 -- lifeGoalID
+        -- Task title complete lifeGoalID taskID estimatedMinutes parentTaskId
+        Task "clean desk"  False 0 0 0 -1,
+        Task "vacuum room" False 0 1 0 -1
     ]
     -- starting state
 --    TodayState
@@ -58,11 +54,14 @@ defaultModel = Model
     2 -- lifeGoalID
     3 -- taskID
     "" -- new_life_goal_title
-    (createEmptyTask 2)
+    (createEmptyTask 2 -1)
     -- state
     "TodayState"
     -- settings
     []
+    -- viewingParentTaskId
+    -1
+    0 -- version
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.

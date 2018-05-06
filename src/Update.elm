@@ -27,6 +27,25 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
+        ViewSubTasks taskID ->
+            let
+                newTaskRegister = model.newTaskRegister
+                updatedTaskRegister = {newTaskRegister|parentTaskId=taskID}
+            in
+            {model|
+                viewingParentTaskId=taskID,
+                newTaskRegister=updatedTaskRegister
+            } ! []
+        TopLevel ->
+            {model|viewingParentTaskId= -1} ! []
+        UpOneLevel ->
+            let
+                parentTaskInList = List.filter (\t -> t.taskID == model.viewingParentTaskId) model.tasks
+                parentTaskId = case List.head parentTaskInList of
+                    Nothing -> -1
+                    Just task -> task.parentTaskId
+            in
+                {model|viewingParentTaskId=parentTaskId} ! []
         FilterTasks filter ->
             let settingsWithoutFilter = List.filter (\s -> not (String.startsWith "filter " s)) model.settings
             in {model|settings=("filter " ++ filter)::settingsWithoutFilter} ! []
@@ -115,20 +134,30 @@ update msg model =
             case String.toInt estMinutesStr of
                 Err _ -> model ! []
                 Ok estimatedMinutes ->
+                    let
+                        checkedEstimatedMinutes =
+                            if estimatedMinutes < 0 then 0
+                            else if estimatedMinutes > 9999 then 9999
+                            else estimatedMinutes
+                    in
                     {model |
                         debug = "taskID " ++ (toString taskID) ++ "; estMinutesStr " ++ estMinutesStr
-                        , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=estimatedMinutes}) model.tasks
+                        , tasks = List.map (\t -> if t.taskID /= taskID then t else {t|estimatedMinutes=checkedEstimatedMinutes}) model.tasks
                         } ! []
         -- don't let user create empty task
-        CreateTask -> if model.newTaskRegister.title == "" then model ! [] else {
-            model |
+        CreateTask -> if model.newTaskRegister.title == "" then model ! [] else
+            let
+                newTaskRegister = model.newTaskRegister
+                updatedNewTask = {newTaskRegister|parentTaskId=model.viewingParentTaskId}
+            in
+            {model |
 --                title: String
 --                , complete: Bool
 --                , estimatedMinutes: Int
 --                , taskID: Int
 
-            tasks = List.append model.tasks [model.newTaskRegister],
-            newTaskRegister = createEmptyTask model.taskID,
+            tasks = List.append model.tasks [updatedNewTask],
+            newTaskRegister = createEmptyTask model.taskID 0,
             taskID = model.taskID + 1,
             debug = toString msg,
             lifeGoalID = model.lifeGoalID

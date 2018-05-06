@@ -5,6 +5,7 @@ type Msg =
     TodayState
     | CreateState
     | TaskState
+    | HelpState
     | LifeGoalState
     -- action states
     | CreateLifeGoal
@@ -27,3 +28,6 @@ type Msg =
     | ToggleSetting String
     | ChangeTaskSorting String
     | FilterTasks String
+    | ViewSubTasks Int
+    | UpOneLevel
+    | TopLevel
