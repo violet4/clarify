@@ -1,4 +1,15 @@
+<!DOCTYPE html>
 <html><head>
+    <meta charset="UTF-8">
+
+        <style type="text/css">
+        /*
+        style for debugging - show where all the containers are
+        */
+/*        div, img, tr, td, table {border:solid 1px black;}*/
+        </style>
+
+    <script src="counter.js"></script>
     <script src="jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
     <script type="text/javascript">
@@ -38,16 +49,17 @@
         padding-left:5%;
         font-size:28px;
     }
-    .slide .prettyprint {font-size: 20px;}
+    .slide .prettyprint {font-size: 20px; border: none;}
     </style>
 </head><body onkeypress="slide(event);">
-<div id="header" style="width: 100%; text-align:center">
+<div id="header" style="text-align:center">
     <h1 style="color:#1D417D; font-size:50px">
-        Clarify
-    </font>
+        Clarify</h1>
 </div>
 
-<!-- introduction -->
+<!--
+introduction
+-->
 <div class="slide">
     <ul>
         <li>A minimalist todo app</li>
@@ -63,213 +75,149 @@
     </ul>
 </div>
 
-<!-- running an Elm program -->
+<!--
+Elm overview
+-->
 <div class="slide">
-    Options for running an Elm program:
-    <ol>
-        <li>Render to HTML</li>
-        <li>Render to javascript, and import to HTML using this tag:
-<pre class="prettyprint">&lt;script
-    type="text/javascript"
-    src="my_module.js"&gt;
-&lt;/script&gt;</pre>
-        </li>
-    </ol>
-    Then, open the resulting html file in a browser.
+    Elm
+    <ul>
+        <li>Type-safe: everything checked at compile-time</li>
+        <li>Compiles to javascript</li>
+        <li>Full-screen app or embed</li>
+    </ul>
 </div>
 
-<!-- Elm architecture -->
+<!--
+Elm signals graph
+-->
+<div class="slide" style="padding:0; margin:0; text-align:center">
+    Elm Signal Graphs<br>
+    <center>
+        <div style="border: solid 1px black; text-align: center; width:75%; align:center">
+            <table style="height:25%">
+                <tr>
+                    <td style="text-align:center">Simple</td>
+                    <td style="text-align:center">FRP</td>
+                </tr><tr>
+                    <td><img src="signals.png" style="width:75%"></td>
+                    <td><img src="signals_full.png" style="width:75%"></td>
+                </tr>
+            </table>
+        </div>
+    </center>
+    <div style="width:100%; text-align:center">
+        Javascript<br>
+        <img src="signals_javascript.png" style="width:50%"><br>
+        Credit <a href="https://xkcd.com/657/">XKCD</a> (Movie Narrative Charts)
+    </div>
+</div>
+
+<!--
+Elm architecture: model/view
+-->
 <div class="slide">
+    <div id="counter1"></div>
+    <script>
+    Elm.Main.embed(document.getElementById("counter1"));
+    </script>
     <ol>
-        <!-- model -->
+        <!--
+            model
+            -->
         <li>model</li><ul>
             <li>Holds the data</li>
             <li>Drives the app</li>
-            <li><pre class="prettyprint">-- Model is equivalent to Int
-type alias Model = Int
-
--- model is of type Model, and initiate it with value 0
-model: Model
-model = 0
-</pre></li>
         </ul>
-        <!-- view -->
+        <!--
+            view
+            -->
         <li>view</li><ul>
-            <li>display the data</li>
-            <li>holds one or more controllers</li>
-            <li><pre class="prettyprint">-- view takes a model and returns html that can send
--- messages/signals (buttons/inputs that do things)
-view: Model -> Html Msg
-view model =
-  div []
-    (List.append
-      [div [] [ text (toString model) ]]
-      buttons)
-</pre></li>
-            </ul>
+            <li>Displays the data</li>
+            <li>Holds any number of controllers for user input</li>
+        </ul>
     </ol>
 </div>
 
-<!-- controllers and the "update" method -->
+<!--
+Elm architecture: controllers and the "update" method
+-->
 <div class="slide">
+    <div id="counter2"></div>
+    <script>
+    Elm.Main.embed(document.getElementById("counter2"));
+    </script>
     <ul>
         <li>controllers and the "update" method</li><ul>
             <li>Elements that users can interact with that send messages that can be used to update the model</li>
-            <li><pre class="prettyprint">
--- returns elements that users can interact with
--- that send messages that can be used to update
--- the model
-buttons: List (Html Msg)
-buttons =
-  [
-    button [ onClick Decrement ] [ text "-" ],
-    button [ onClick Increment ] [ text "+" ]
-  ]</pre></li>
             <li>Receive messages and use them to update the model</li>
-            <li><pre class="prettyprint">
--- takes a message and a model and returns
--- a model that has the changes
-update: Msg -> Model -> Model
-update msg model =
-  case msg of
-    Increment -> model + 1
-    Decrement -> model - 1
-</pre></li>
         </ul>
+        <div style="text-align:center; width:100%">
+            <img src="update.png" style="width:50%">
+        </div>
 
 </div>
 
-<!-- forms -->
-<div class="slide">
-    Forms:
-<pre class="prettyprint">
-form [onSubmit CreateLifeGoal] [
-    input [
-        onInput UpdateCreateLifeGoalRegister
-    ] [],
-    button [type_ "submit"] [text "Create"]
-]</pre>
-<pre class="prettyprint">
-type Msg =
-    -- simple states
-    TodayState
-    ...
-    -- action states
-    | CreateLifeGoal
-    ...
-</pre>
-<pre class="prettyprint">
-update msg model =
-    case msg of
-        -- every time user enters a character,
-        -- we update the model
-        UpdateCreateLifeGoalRegister in_text -> {
-            model |
-            new_life_goal_title = in_text
-        }
-        -- when user submits the form, we turn the
-        -- current in-progress input and turn
-        -- it into an actual life goal
-        CreateLifeGoal -> {
-            model |
-            life_goals = (
-                List.append
-                    model.life_goals
-                    [
-                        LifeGoal
-                            model.new_life_goal_title
-                            []
-                            model.lgid
-                    ]
-            ),
-            lgid = model.lgid + 1,
-            new_life_goal_title = ""
-        }
-        ...
-</pre>
-</div>
 
-<!-- Buttons example in 5 minutes -->
-<div class="slide">
-    Elm <a href="http://elm-lang.org/examples/buttons" target="_blank">Buttons Example</a> in 5 minutes
-<pre class="prettyprint">
-import Html exposing (div, button, text)
-import Html.Events exposing (onClick)
-
-main = Html.beginnerProgram {
-  model=model,
-  view=view,
-  update=update
-  }
-
-type alias Model = {value: Int}
-model = Model 0
-
-type Msg =
-    Noop
-    | Increment
-    | Decrement
-
-view model =
-    div [] [
-        button [onClick Decrement] [text "-"],
-        button [onClick Increment] [text "+"],
-        text (toString model.value)
-    ]
-
-update msg model =
-    case msg of
-        Increment -> {model|value=model.value+1}
-        Decrement -> {model|value=model.value-1}
-        _ -> model
-</div>
-
-<!-- benefits of using elm -->
+<!--
+benefits of using elm
+-->
 <div class="slide">
     Benefits:
     <ul>
-        <li>Reusable pieces (e.g. same code on Today page as Tasks page for displaying/updating tasks)</li>
-        <li>Guaranteed ype safety</li>
+        <li>Reusable pieces</li>
+        <li>Guaranteed type safety</li>
+        <li>No runtime errors (at least, not on the Elm side)</li>
     </ul>
 </div>
 
-<!-- Keeping state in a functional language -->
+<!--
+Keeping state in a functional language
+-->
 <div class="slide">
     Keeping state in a functional language
     <ul>
-        <li>Keep track of the current tab/view based on a state "string"</li>
-        <li><a href="https://github.com/evancz/elm-todomvc/blob/master/Todo.elm">elm-todomvc</a> stores state as model.visibility (one of "All", "Completed", "Active") and uses that to decide whether to show completed, </li>
-        <li></li>
-        <li></li>
+        <li>Keep track of current view (e.g. tab/page) based on a state stored as a string value</li>
+        <li>Strings are javascript-compatible for use with saving the model in the browser<br><br></li>
+        <li>e.g. <a href="https://github.com/evancz/elm-todomvc/blob/master/Todo.elm">elm-todomvc</a>:<br>
+            <pre class="prettyprint">-- visibility is one of "All", "Completed", "Active"
+visibility : String
+</pre>
+        </li>
+        <li>Clarify:<br>
+            <pre class="prettyprint">-- one of "TodayState", "TaskState", "LifeGoalsState",
+-- "LifeGoalState", "SettingsViewState", "HelpState"
+state: String
+</pre>
+        </li>
     </ul>
 </div>
 
-<!-- easy vs difficult -->
+<!--
+Special Features
+-->
 <div class="slide">
-    Difficult:
+    Model upgrades
     <ul>
-        <li>Need to manually/explicitly handle every possible case</li>
-        <li>List operations - many operations return an optional type (like Scala opt(P) returning None or Some(P)), which can be a lot of extra work in already-deeply-indented sections of code</li>
-        <li>Getting a single element out of a list is a pain</li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
-    Easy:
-    <ul>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
+        <li>As the Model in the Elm program changes, models saved in the old version break</li>
+        <li>Mechanism for managing updates: use javascript to upgrade a saved model for compatibility with newest Elm Model</li>
+        <pre class="prettyprint">// update from pre-version-ids to version 0
+if (
+    // user has used the app before
+    startingState != null
+    // user's model isn't compatible with
+    // the current version of the Elm app
+    && startingState.version == undefined
+) {
+    // upgrade startingState for compatibility
+    // with current elm model
+    ...
+}</pre>
     </ul>
 </div>
 
-<!-- empty -->
+<!--
+empty
+-->
 <div class="slide">
     End
 </div>

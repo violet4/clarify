@@ -92,7 +92,12 @@ settingsView model =
             model
             "Show debug info"
             "Contains all info about your tasks and life goals"
-        )
+        ) -- ,
+        --(settingsButton
+        --    model
+        --    "Subtask mode"
+        --    "Allows tasks to be added underneath other tasks instead of just in a flat list"
+        --)
     ]
 
 getLifeGoal goals goalId = 
