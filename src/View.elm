@@ -6,7 +6,7 @@ import Style exposing (..)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option, map, table, tr, td, tbody,
-    textarea, ul, li
+    textarea, ul, li, h2
     )
 import Html.Attributes exposing (
   href, style, align, id, type_, value, property, attribute, class,
@@ -99,14 +99,14 @@ getLifeGoal goals goalId =
 
 lifeGoalSelectorForCreating life_goals=
     -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
-    select [addRemoveButton150width, onInput ((UpdateTaskRegister "lifeGoal"))] (
+    select [onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
         ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    select [width100p, (onInput (UpdateTaskGoal task.taskID))] (
+    select [buttonStyle, (onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
@@ -118,8 +118,7 @@ estimatedMinutesSelector task =
         onInput (UpdateTaskEstimatedMinutes task.taskID),
         value (toString task.estimatedMinutes),
         Html.Attributes.min "0",
-        Html.Attributes.max "9999",
-        addRemoveButton150width
+        Html.Attributes.max "9999"
     ] []
 
 sortSelectorButton fieldName =
@@ -168,6 +167,8 @@ countAllSubtasks tasks taskID =
             directSubtaskIdCount
             directSubtaskIds
 
+height100p = style [("height", "100%")]
+
 taskToTableRow model task =
     tr [] [
         td [class "taskButtons"] [
@@ -176,35 +177,32 @@ taskToTableRow model task =
             -- "add/remove from today" button
             if (List.member task.taskID model.todayTaskIds)
                 then button [buttonStyle,
-                    addRemoveButton150width ,
                     onClick (RemoveToday task.taskID)
                 ] [text "Remove from Today"]
                 else button [buttonStyle,
-                    addRemoveButton150width,
                     onClick (AddToday task.taskID)
-                ] [text    "Add to Today"],
+                ] [text "Add to Today"],
 
             -- delete button
-            button [ buttonStyle, addRemoveButton150width,
+            button [ buttonStyle,
             onClick (DeleteTask task.taskID)
             ] [text "Delete"],
             button [
-                onClick (ViewSubTasks task.taskID)
+                onClick (ViewSubTasks task.taskID),
+                buttonStyle
             ] [text (
                 "View Subtasks ("
                 ++ (toString (countDirectSubtasks model.tasks task.taskID))
                 ++ "/"
                 ++ (toString (countAllSubtasks model.tasks task.taskID))
-                ++ ")")]
-        ],
-        td [class "taskInfo"][
+                ++ ")")],
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
             -- estimated minutes
             estimatedMinutesSelector task
         ],
         td [wide99percentStyle, class "taskText"] [
-            textarea [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "99%"), ("height", "100%")]] []
+            textarea [Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "99%"), ("height", "133px"), ("overflow", "auto")]] []
         ]
     ]
 
@@ -287,9 +285,9 @@ taskView model =
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
                 br [] [],
                 --
-                button [onClick TopLevel] [text "Top Level"],
+                button [onClick TopLevel, buttonStyle] [text "Top Level"],
                 br [] [],
-                button [onClick UpOneLevel] [text "Up one level"],
+                button [onClick UpOneLevel, buttonStyle] [text "Up one level"],
                 br [] [], br [] [],
                 -- list of current tasks
                 taskListToHtmlTable model sortedTaskViewTasks
@@ -297,29 +295,26 @@ taskView model =
             -- section to create a new task
             [
                 br [] [],
-                hr [] [],
-                br [] [],
-
                 -- form to create a new task
                 form [onSubmit CreateTask] [
-                    text "Create a Task",
+                    h2 [style [("display", "inline")]] [text "Create a Task"],
                     br [] [],
                     --text "TaskState",
-                    text "Life Goal: ",
+                    text "Life Goal",
+                    br [] [],
                     lifeGoalSelectorForCreating model.life_goals,
                     br [] [],
+                    text "Estimated Minutes",
                     br [] [],
-                    text "Time: ",
                     input [
                         type_ "number",
                         onInput (UpdateTaskRegister "estimatedMinutes"),
                         Html.Attributes.min "0",
                         Html.Attributes.max "9999"
                     ][],
-                    text " Minutes",
                     br [] [],
+                    text "Description",
                     br [] [],
-                    text "Description: ",
                     input [
                         onInput (UpdateTaskRegister "description")
                     ] [],
