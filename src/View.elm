@@ -45,10 +45,11 @@ htmlAppHeader = div [style [ display flex_
   ]] [text "Clarify"]
 
 
-redFont = style [color "red", fontFamily "sans-serif", fontWeight "bold", fontSize "17px"]
+redFont = style [color "white", fontFamily "sans-serif", fontWeight "bold", fontSize "17px"]
 noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 
 buttonStyle = style [fontWeight "600", borderRadius "10px", padding "6px", paddingLeft "10px", paddingRight "10px", backgroundColor "#1D417D", color "white"]
+tabStyle = style [borderRadius "2px", padding "4px", marginLeft "-2px", marginRight "-2px", marginBottom "-5px", backgroundColor "#1D417D", borderColor "#1D417D", color "white"]
 
 inputStyle = style[ borderRadius "6px", padding "5px"]
 
@@ -120,7 +121,7 @@ estimatedMinutesSelector task =
     ] []
 
 sortSelectorButton fieldName =
-    button [buttonStyle, onClick (ChangeTaskSorting fieldName)] [text fieldName]
+    button [tabStyle, style [ marginLeft "1px", marginRight "1px"], onClick (ChangeTaskSorting fieldName)] [text fieldName]
 
 sortBySelectorButtons model =
     div [] [
@@ -339,7 +340,7 @@ todayView model = div [fullSizeStyle] (
             text "You don't have any tasks for today!",
             br [] [],
             text "Go to ",
-            todayLinkButton model,
+            todayLinkA model,
             text " to add some!"
         ]
     )
@@ -381,9 +382,10 @@ htmlNavigationBar model = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
         
-        a [
+        button [
             -- these links don't take us anywhere yet,
             -- but at least we can click them.
+            (tabStyle),
             (href "#"),
             (onClick TodayState),
             (if model.state == "TodayState" then redFont else noStyle)
@@ -401,28 +403,39 @@ htmlNavigationBar model = div [] [
     ]
 
 lifeGoalsLinkButton model =
-    a [
+    button [
+        (tabStyle),
         (href "#"),
         (onClick LifeGoalsState),
         (if model.state == "LifeGoalsState" then redFont else noStyle)
     ] [text "Life Goals"]
 
 settingsLinkButton model =
-    a [
+    button [
+        (tabStyle),
         (href "#"),
         (onClick SettingsViewState),
         (if model.state == "SettingsViewState" then redFont else noStyle)
     ] [text "Settings"]
 
-todayLinkButton model =
+todayLinkA model =
     a [
         (href "#"),
         (onClick TaskState),
         (if model.state == "TaskState" then redFont else noStyle)
     ] [text "Tasks"]
 
+todayLinkButton model =
+    button [
+        (tabStyle),
+        (href "#"),
+        (onClick TaskState),
+        (if model.state == "TaskState" then redFont else noStyle)
+    ] [text "Tasks"]
+
 createViewButton model =
-    a [
+    button [
+        (tabStyle),
         (href "#"),
         (onClick CreateState),
         (if model.state == "CreateState" then redFont else noStyle)
