@@ -390,6 +390,9 @@ lifeGoalElement lifeGoal =
         input [inputStyle, Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
 
+-- Saving life goals-in-progress
+saveGoalInProgress task =
+    task
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
     (List.append
