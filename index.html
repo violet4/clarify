@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clarify</title>
   <script type="text/javascript" src="js/main.js"></script>
   <style type="text/css">
@@ -48,7 +49,7 @@ don't try to skip steps.
 var startingState = storedState ? JSON.parse(storedState) : null;
 
 // update from pre-version-ids to version 0
-if (startingState.version == undefined) {
+if (startingState != null && startingState.version == undefined) {
     startingState.version = 0;
     startingState.viewingParentTaskId = -1;
     startingState.tasks.map(function(task){
