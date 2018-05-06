@@ -283,6 +283,12 @@ taskView model =
                 text "Search Task: ",
                 taskFilterTextInput,
 
+                -- change depth buttons
+                br [] [],
+                button [onClick TopLevel, buttonStyle] [text "Top Level"],
+                br [] [],
+                button [onClick UpOneLevel, buttonStyle] [text "Up one level"],
+
                 br [] [], br [] [],
                 -- list of current tasks
                 taskListToHtmlTable model sortedTaskViewTasks,
@@ -291,12 +297,7 @@ taskView model =
 
                 text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
-                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
-                br [] [],
-                --
-                button [onClick TopLevel, buttonStyle] [text "Top Level"],
-                br [] [],
-                button [onClick UpOneLevel, buttonStyle] [text "Up one level"]
+                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)")
             ]
             -- section to create a new task
             [
