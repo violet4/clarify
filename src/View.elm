@@ -392,8 +392,10 @@ lifeGoalElement lifeGoal =
 
 -- Saves the progress of inputting life Goals
 saveLifeGoal task =
-    task
-    
+    task UpdateCreateLifeGoalRegister
+
+
+
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
     (List.append
@@ -408,7 +410,7 @@ lifeGoalsView model = div [fullSizeStyle]
                 text "Description: ",
                 input [
                 inputStyle,
-                  onInput UpdateCreateLifeGoalRegister
+                  saveLifeGoal(onInput) --UpdateCreateLifeGoalRegister
               ] [],
               br [] [],
               br [] [],
