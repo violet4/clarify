@@ -34,7 +34,9 @@ update msg model =
             in
             {model|
                 viewingParentTaskId=taskID,
-                newTaskRegister=updatedTaskRegister
+                newTaskRegister=updatedTaskRegister,
+                -- this allows us to jump from the today page
+                state="TaskState"
             } ! []
         TopLevel ->
             {model|viewingParentTaskId= -1} ! []
