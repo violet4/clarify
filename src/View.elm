@@ -393,6 +393,7 @@ lifeGoalElement lifeGoal =
 -- Saves the progress of inputting life Goals
 saveLifeGoal task =
     task UpdateCreateLifeGoalRegister
+    task UpdateLifeGoalDescription
 
 
 
