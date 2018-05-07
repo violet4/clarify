@@ -392,10 +392,13 @@ lifeGoalElement lifeGoal =
 
 -- Saves the progress of inputting life Goals
 saveLifeGoal task =
-    task UpdateCreateLifeGoalRegister
-    task UpdateLifeGoalDescription
-
-
+    form [onSubmit CreateLifeGoal] [
+        text "Desctription: " ++ task,
+        input [
+        inputStyle,
+            onInput UpdateCreateLifeGoalRegister
+        ]
+    ]
 
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
