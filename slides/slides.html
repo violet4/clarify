@@ -24,6 +24,7 @@
             slidenum = parseInt(document.location.hash.split("#")[1]);
         }
         $($(".slide")[slidenum]).show();
+        $("body").show();
     })
     next = function() {
         slidenum += 1;
@@ -53,7 +54,7 @@
     }
     .slide .prettyprint {font-size: 20px; border: none;}
     </style>
-</head><body onkeypress="slide(event);">
+</head><body onkeypress="slide(event);" style="display:none">
 <div id="header" style="text-align:center">
     <h1 style="color:#44257D; font-size:50px">
         Clarify</h1>
