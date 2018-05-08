@@ -390,15 +390,13 @@ lifeGoalElement lifeGoal =
         input [inputStyle, Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
 
--- Saves the progress of inputting life Goals
+-- Saves the progress of inputting life Goals(still in progress)
+saveLifeGoal: String -> Html Msg
 saveLifeGoal task =
-    form [onSubmit CreateLifeGoal] [
-        text ("Description: " ++ task),
-        input [
-            inputStyle,
-            onInput UpdateCreateLifeGoalRegister
-        ] []
+    div[width100p] [
+        text("Recent entry: " ++ task)
     ]
+
 
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
@@ -415,7 +413,6 @@ lifeGoalsView model = div [fullSizeStyle]
                 input [
                     inputStyle,
                     onInput UpdateCreateLifeGoalRegister
-                    --saveLifeGoal(onInput) --UpdateCreateLifeGoalRegister
               ] [],
               br [] [],
               br [] [],
