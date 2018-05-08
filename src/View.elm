@@ -211,7 +211,13 @@ taskToTableRow model task =
             estimatedMinutesSelector task
         ],
         td [wide99percentStyle, class "taskText"] [
-            textarea [inputStyle, style [height "100%"],Html.Attributes.defaultValue task.title, onInput (UpdateTaskDescription task.taskID), style [("width", "99%"), ("height", "133px"), ("overflow", "auto")]] []
+            textarea [
+                class "taskText",
+                inputStyle,
+                Html.Attributes.defaultValue task.title,
+                onInput (UpdateTaskDescription task.taskID),
+                style [("width", "99%"), ("height", "133px"), ("overflow", "auto")]
+            ] []
         ]
     ]
 
