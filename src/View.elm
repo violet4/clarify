@@ -66,6 +66,8 @@ currentView model =
 
 helpView = ul [] [
         li [] [text
+            "Data is constantly saved instantly as you type, so you don't need to worry about losing your data. (That doesn't apply to the \"Create a task\" section - that is wiped away when you leave the \"Tasks\" tab.)"],
+        li [] [text
             "In the \"View Subtasks\" button (e.g. \"View Subtasks (4/10)\"), the first number 4 is the number of direct subtasks, and the second number 10 is the total number of recursive subtasks"]
     ]
 
@@ -286,13 +288,19 @@ taskView model =
     div [fullSizeStyle] 
         (List.append
             [
+                -- estimated minutes sum
+                text "Estimated minutes for displayed tasks: ",
+                tasksEstimatedMinutesSumText sortedTaskViewTasks,
+                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
+
                 -- sorting buttons
                 sortBySelectorButtons model,
                 br [] [],
 
                 -- filter text input
-                text "Search Task: ",
+                text "Filter Tasks: ",
                 taskFilterTextInput,
+                br [] [],
 
                 -- change depth buttons
                 br [] [],
@@ -302,13 +310,7 @@ taskView model =
 
                 br [] [], br [] [],
                 -- list of current tasks
-                taskListToHtmlTable model sortedTaskViewTasks,
-
-                br [] [],
-
-                text "Estimated minutes for displayed tasks: ",
-                tasksEstimatedMinutesSumText sortedTaskViewTasks,
-                text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)")
+                taskListToHtmlTable model sortedTaskViewTasks
             ]
             -- section to create a new task
             [
