@@ -188,19 +188,24 @@ taskToTableRow model task =
             -- "add/remove from today" button
             if (List.member task.taskID model.todayTaskIds)
                 then button [buttonStyle,
-                    onClick (RemoveToday task.taskID)
+                    onClick (RemoveToday task.taskID),
+                    class "taskButton"
                 ] [text "Remove from Today"]
-                else button [buttonStyle,
-                    onClick (AddToday task.taskID)
+                else button [
+                    buttonStyle,
+                    onClick (AddToday task.taskID),
+                    class "taskButton"
                 ] [text "Add to Today"],
 
             -- delete button
             button [buttonStyle,
-                onClick (DeleteTask task.taskID)
+                onClick (DeleteTask task.taskID),
+                class "taskButton"
             ] [text "Delete"],
             button [
                 onClick (ViewSubTasks task.taskID),
-                buttonStyle
+                buttonStyle,
+                class "taskButton"
             ] [text (
                 "View Subtasks ("
                 ++ (toString (countDirectSubtasks model.tasks task.taskID))
