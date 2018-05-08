@@ -390,7 +390,7 @@ lifeGoalElement lifeGoal =
         input [inputStyle, Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
 
--- Saves the progress of inputting life Goals
+-- Saves the progress of inputting life Goals(still in progress)
 saveLifeGoal: String -> Html Msg
 saveLifeGoal task =
     div[width100p] [
