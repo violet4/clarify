@@ -212,6 +212,20 @@ taskToTableRow model task =
                 ++ "/"
                 ++ (toString (countAllSubtasks model.tasks task.taskID))
                 ++ ")")],
+
+            -- "View Siblings" button, if on the today page
+            if (model.state == "TodayState") then
+                button [
+                    onClick (ViewSubTasks task.parentTaskId),
+                    buttonStyle,
+                    class "taskButton"
+                ] [
+                    text ("View Siblings ("
+                        ++ (toString (countDirectSubtasks model.tasks task.parentTaskId))
+                        ++ ")")
+                ]
+            else text "",
+
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
             -- estimated minutes
