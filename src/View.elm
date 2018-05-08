@@ -391,13 +391,10 @@ lifeGoalElement lifeGoal =
     ]
 
 -- Saves the progress of inputting life Goals
-saveLifeGoal: Task -> Html Msg
+saveLifeGoal: String -> Html Msg
 saveLifeGoal task =
     div[width100p] [
-        button [buttonStyle, (onClick (UpdateRecentLifeGoal task))] [text "Recent entry: "],
-        input [inputStyle,
-            onInput (UpdateRecentLifeGoal task)
-        ] []
+        text("Recent entry: " ++ task)
     ]
 
 
