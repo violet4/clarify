@@ -221,7 +221,8 @@ taskToTableRow model task =
                     class "taskButton"
                 ] [
                     text ("View Siblings ("
-                        ++ (toString (countDirectSubtasks model.tasks task.parentTaskId))
+                        -- don't include itself
+                        ++ (toString (-1 + (countDirectSubtasks model.tasks task.parentTaskId)))
                         ++ ")")
                 ]
             else text "",
