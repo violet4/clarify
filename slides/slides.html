@@ -92,7 +92,18 @@ https://guide.elm-lang.org/interop/javascript.html
 <div class="slide">
     Elm and JavaScript
     <ul>
-        
+        <li>Use a JavaScript and HTML file to use ports</li>
+        <li>Ports send or receive messages from JavaScript</li>
+        <li>Elm ensures that it receives correct information</li>
+        <li>Keep Elm code separate from JavaScript code</li>
+        <pre class="prettyprint">
+var storedState = localStorage.getItem('elm-todo-save');
+var startingState = storedState ? JSON.parse(storedState) : null;
+var todomvc = Elm.Main.fullscreen(startingState);
+todomvc.ports.save.subscribe(function(state) {
+    localStorage.setItem('elm-todo-save', JSON.stringify(state));
+});
+        </pre>
     </ul>
 </div>
 
