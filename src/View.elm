@@ -315,7 +315,8 @@ taskView model =
                 text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
-
+                br [] [],
+                br [] [],
                 -- sorting buttons
                 sortBySelectorButtons model,
                 br [] [],
