@@ -63,6 +63,41 @@
         Clarify</h1>
 </div>
 
+
+<!--
+Local Storage
+-->
+<div class="slide">
+    Storage
+    <ul>
+        <li>Local browser storage</li>
+        <li>Use ports to communicate with JavaScript</li>
+        <pre class="prettyprint">
+port save: Model -> Cmd msg //Sends the model to JavaScript
+
+updateWithStorage msg model =
+    let
+        (newModel, cmds) = update msg model
+    in
+        (newModel, Cmd.batch [save newModel, cmds])
+        </pre>
+    </ul>
+
+</div>
+
+<!--
+Elm and JavaScript interop
+https://guide.elm-lang.org/interop/javascript.html
+-->
+<div class="slide">
+    Elm and JavaScript
+    <ul>
+        
+    </ul>
+</div>
+
+
+
 <!--
 introduction
 -->
@@ -176,7 +211,7 @@ Elm architecture: controllers and the "update" method
         <div style="text-align:center; width:100%">
             <img src="update.png" style="width:50%">
         </div>
-
+    </ul>
 </div>
 
 
@@ -236,6 +271,10 @@ if (
 }</pre>
     </ul>
 </div>
+
+
+
+
 
 <!--
 empty
