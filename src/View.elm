@@ -51,7 +51,7 @@ noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 buttonStyle = style [fontWeight "600", borderRadius "10px", padding "6px", paddingLeft "10px", paddingRight "10px", backgroundColor "#1D417D", color "white"]
 tabStyle = style [borderRadius "2px", padding "4px", marginLeft "-2px", marginRight "-2px", marginBottom "-5px", backgroundColor "#1D417D", borderColor "#1D417D", color "white"]
 
-inputStyle = style[ borderRadius "6px", padding "5px"]
+inputStyle = style[ borderRadius "6px", padding "5px", margin "2px"]
 
 currentView model =
     case model.state of
@@ -116,7 +116,7 @@ lifeGoalSelectorForCreating life_goals=
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    select [inputStyle, width100p, (onInput (UpdateTaskGoal task.taskID))] (
+    select [inputStyle, style [Style.width "99%"], (onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
@@ -125,6 +125,7 @@ lifeGoalSelectorForEditing life_goals task =
 estimatedMinutesSelector task =
     input [
         inputStyle,
+        style [Style.width "80%"],
         type_ "number",
         onInput (UpdateTaskEstimatedMinutes task.taskID),
         value (toString task.estimatedMinutes),
@@ -182,7 +183,7 @@ height100p = style [("height", "100%")]
 
 taskToTableRow model task =
     tr [] [
-        td [class "taskButtons"] [
+        td [style [Style.width "20%"], class "taskButtons"] [
             text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
 
             -- "add/remove from today" button
@@ -229,8 +230,10 @@ taskToTableRow model task =
 
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
+            
             -- estimated minutes
-            estimatedMinutesSelector task
+            estimatedMinutesSelector task,
+            text "Min"
         ],
         td [wide99percentStyle, class "taskText"] [
             textarea [
