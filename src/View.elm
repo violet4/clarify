@@ -51,7 +51,7 @@ noStyle = style [fontFamily "sans-serif", fontSize "15px"]
 buttonStyle = style [fontWeight "600", borderRadius "10px", padding "6px", paddingLeft "10px", paddingRight "10px", backgroundColor "#1D417D", color "white"]
 tabStyle = style [borderRadius "2px", padding "4px", marginLeft "-2px", marginRight "-2px", marginBottom "-5px", backgroundColor "#1D417D", borderColor "#1D417D", color "white"]
 
-inputStyle = style[ borderRadius "6px", padding "5px"]
+inputStyle = style[ borderRadius "6px", padding "5px", margin "2px"]
 
 currentView model =
     case model.state of
@@ -116,7 +116,7 @@ lifeGoalSelectorForCreating life_goals=
     )
 
 lifeGoalSelectorForEditing life_goals task =
-    select [inputStyle, width100p, (onInput (UpdateTaskGoal task.taskID))] (
+    select [inputStyle, style [Style.width "99%"], (onInput (UpdateTaskGoal task.taskID))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
@@ -125,6 +125,7 @@ lifeGoalSelectorForEditing life_goals task =
 estimatedMinutesSelector task =
     input [
         inputStyle,
+        style [Style.width "80%"],
         type_ "number",
         onInput (UpdateTaskEstimatedMinutes task.taskID),
         value (toString task.estimatedMinutes),
@@ -247,8 +248,11 @@ taskToTableRow model task =
 
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
+            
             -- estimated minutes
-            estimatedMinutesSelector task
+            estimatedMinutesSelector task,
+            br [] [],
+            text "(Minutes)"
         ],
 
         -- display/edit the task description
@@ -368,7 +372,8 @@ taskView model =
                 text "Estimated minutes for displayed tasks: ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
-
+                br [] [],
+                br [] [],
                 -- sorting buttons
                 sortBySelectorButtons model,
                 br [] [],
