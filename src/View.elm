@@ -94,7 +94,18 @@ settingsView model =
             model
             "Show debug info"
             "Contains all info about your tasks and life goals"
-        ) -- ,
+        ),
+        br [] [],
+
+        -- show model so it can be saved/loaded
+        text "To load a saved model, first click \"Show model here\" (ignore the output), then click \"Load model\", then paste your model there.",
+        br [] [],
+        button [id "loadModelButton"] [text "Load model"],
+        br [] [],
+        button [onClick Noop] [text "Show model here:"],
+        br [] [],
+        textarea [id "model"] []
+        -- ,
         --(settingsButton
         --    model
         --    "Subtask mode"

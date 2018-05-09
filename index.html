@@ -74,10 +74,14 @@
 </head>
 
 <body>
+    <div id="clarify"></div>
 </body>
 
 <script type="text/javascript">
+
 var storedState = localStorage.getItem('elm-todo-save');
+var startingState = storedState ? JSON.parse(storedState) : null;
+
 
 
 /********* MODEL UPDATES **********
@@ -100,7 +104,7 @@ don't try to skip steps.
 
 **********************************/
 
-var startingState = storedState ? JSON.parse(storedState) : null;
+
 
 // update from pre-version-ids to version 0
 if (startingState != null && startingState.version == undefined) {
@@ -119,10 +123,33 @@ if (startingState != null && startingState.version == undefined) {
 // }
 
 
-
-var todomvc = Elm.Main.fullscreen(startingState);
+var clarify_div = document.getElementById("clarify");
+var todomvc = Elm.Main.embed(clarify_div, startingState);
 todomvc.ports.save.subscribe(function(state) {
+    console.log("received save message");
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
+    var model_textbox = document.getElementById("model");
+    if (model_textbox != null) {
+        model_textbox.innerHTML = JSON.stringify(state);
+        var loadModelButton = document.getElementById("loadModelButton");
+        loadModelButton.onclick = function() {
+            var manuallyEnteredState = prompt("Have a model to load? (otherwise, leave this empty)", "");
+            if (manuallyEnteredState != null) {
+                var newState = JSON.parse(manuallyEnteredState);
+                if (newState != null) {
+                    // check that the new model works
+                    document.body.innerHTML = "<div id='clarify'></div>";
+                    var clarify_div = document.getElementById("clarify");
+                    var todomvc = Elm.Main.embed(clarify_div, newState);
+
+                    // if it works, save it and reload the page
+                    localStorage.setItem('elm-todo-save', JSON.stringify(newState));
+                    document.location = document.location;
+                }
+            }
+
+        }
+    }
 });
 
 
