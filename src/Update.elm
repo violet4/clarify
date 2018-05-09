@@ -27,6 +27,8 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
+        -- bogus update for triggering events
+        Noop -> model ! []
         ViewSubTasks taskID ->
             let
                 newTaskRegister = model.newTaskRegister
@@ -196,6 +198,7 @@ update msg model =
             state=toString msg,
             settings = resetFilter (model.settings)
             } ! []
+
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }
 -- we need a "msg" that enumerates the actions we could take at this step,

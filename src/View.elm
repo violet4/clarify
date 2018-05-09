@@ -6,11 +6,11 @@ import Style exposing (..)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option, map, table, tr, td, tbody,
-    textarea, ul, li, h2
+    textarea, ul, li, h2, span
     )
 import Html.Attributes exposing (
   href, style, align, id, type_, value, property, attribute, class,
-  width
+  width, rowspan
   )
 import Html.Events exposing (onClick, onSubmit, onInput)
 
@@ -94,7 +94,18 @@ settingsView model =
             model
             "Show debug info"
             "Contains all info about your tasks and life goals"
-        ) -- ,
+        ),
+        br [] [],
+
+        -- show model so it can be saved/loaded
+        text "To load a saved model, first click \"Show model here\" (ignore the output), then click \"Load model\", then paste your model there.",
+        br [] [],
+        button [id "loadModelButton"] [text "Load model"],
+        br [] [],
+        button [onClick Noop] [text "Show model here:"],
+        br [] [],
+        textarea [id "model"] []
+        -- ,
         --(settingsButton
         --    model
         --    "Subtask mode"
@@ -183,7 +194,35 @@ height100p = style [("height", "100%")]
 
 taskToTableRow model task =
     tr [] [
-        td [style [Style.width "20%"], class "taskButtons"] [
+
+
+        -- "view subtasks" button
+        td [
+            onClick (ViewSubTasks task.taskID),
+            class "button",
+            class "noselect"
+        ] [
+            button [
+                style [
+                    ("border", "none"),
+                    ("background", "none"),
+                    ("color", "white"),
+                    ("white-space", "nowrap"),
+                    ("padding", "0")
+                    --("overflow", "hidden")
+                ],
+                class "verticalLeft"
+            ] [text (
+                "Subtasks ("
+                ++ (toString (countDirectSubtasks model.tasks task.taskID))
+                ++ "/"
+                ++ (toString (countAllSubtasks model.tasks task.taskID))
+                ++ ")")
+            ]
+        ],
+
+
+        td [class "taskButtons"] [
             text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
 
             -- "add/remove from today" button
@@ -203,16 +242,6 @@ taskToTableRow model task =
                 onClick (DeleteTask task.taskID),
                 class "taskButton"
             ] [text "Delete"],
-            button [
-                onClick (ViewSubTasks task.taskID),
-                buttonStyle,
-                class "taskButton"
-            ] [text (
-                "View Subtasks ("
-                ++ (toString (countDirectSubtasks model.tasks task.taskID))
-                ++ "/"
-                ++ (toString (countAllSubtasks model.tasks task.taskID))
-                ++ ")")],
 
             -- "View Siblings" button, if on the today page
             if (model.state == "TodayState") then
@@ -233,23 +262,62 @@ taskToTableRow model task =
             
             -- estimated minutes
             estimatedMinutesSelector task,
-            text "Min"
+            br [] [],
+            text "(Minutes)"
         ],
+
+        -- display/edit the task description
         td [wide99percentStyle, class "taskText"] [
             textarea [
                 class "taskText",
                 inputStyle,
                 Html.Attributes.defaultValue task.title,
                 onInput (UpdateTaskDescription task.taskID),
-                style [("width", "99%"), ("height", "133px"), ("overflow", "auto")]
+                style [("width", "95%"), ("height", "100px")]
             ] []
         ]
+
+
     ]
 
 
 taskListToHtmlTable model tasks =
-    Html.table [inputStyle, width100p] [tbody [] (List.map (\t -> taskToTableRow model t) tasks)]
+    let
+        numRows = 1 + (List.length tasks)
+    in
+    Html.table [
+        inputStyle, width100p
+    ] (
 
+        -- this whole section is for the left side button
+        -- for going "Go up"
+        (tr [] [
+            if numRows == 1
+            then text "" --button [onClick UpOneLevel] [text "Go up"]
+            else td [
+                onClick UpOneLevel,
+                class "buttonLeft",
+                class "button",
+                class "noselect",
+                rowspan numRows
+            ] [
+                button [
+                    style [
+                        ("border", "none"),
+                        ("background", "none"),
+                        ("color", "white"),
+                        ("white-space", "nowrap"),
+                        ("padding", "0")
+                        --("overflow", "hidden")
+                    ],
+                    class "verticalLeft"
+                ] [text "Go up"]
+            ]
+        ]) ::
+
+        -- list of tasks, turned into table rows
+        (List.map (\t -> taskToTableRow model t) tasks)
+    )
 
 sortTasks model tasks =
     if List.member "Life Goal" model.settings
@@ -330,7 +398,7 @@ taskView model =
                 br [] [],
                 button [onClick TopLevel, buttonStyle] [text "Top Level"],
                 br [] [],
-                button [onClick UpOneLevel, buttonStyle] [text "Up one level"],
+                button [onClick UpOneLevel, buttonStyle] [text "Go up"],
 
                 br [] [], br [] [],
                 -- list of current tasks
@@ -422,14 +490,6 @@ lifeGoalElement lifeGoal =
         input [inputStyle, Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
     ]
 
--- Saves the progress of inputting life Goals(still in progress)
-saveLifeGoal: String -> Html Msg
-saveLifeGoal task =
-    div[width100p] [
-        text("Recent entry: " ++ task)
-    ]
-
-
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
     (List.append
@@ -440,6 +500,9 @@ lifeGoalsView model = div [fullSizeStyle]
             br [] [],
             text "Create a Life Goal",
             br [] [],
+            form [onInput UpdateCreateLifeGoalRegister,
+                value model.new_life_goal_title] [],
+                div[] [text model.new_life_goal_title],
             form [onSubmit CreateLifeGoal] [
                 text "Description: ",
                 input [
