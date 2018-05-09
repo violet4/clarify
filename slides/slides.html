@@ -99,7 +99,7 @@ introduction
 </div>
 
 <!--
-Elm overview
+Elm overview/benefits
 -->
 <div class="slide">
     Elm
@@ -108,7 +108,15 @@ Elm overview
         <li>Compiles to javascript</li>
         <li>Full-screen app or embed (can embed any number of Elm apps anywhere in html)</li>
     </ul>
+    Benefits:
+    <ul>
+        <li>Reusable pieces (functions)</li>
+        <li>Guaranteed type safety</li>
+        <li>No runtime errors (at least, not on the Elm side)</li>
+    </ul>
 </div>
+
+
 
 <!--
 Elm signals graph
@@ -129,8 +137,14 @@ Elm signals graph
         </div>
     </center>
     <div style="width:100%; text-align:center">
-        <img src="signals_javascript.png" style="width:50%"><br>
-        Credit <a href="https://xkcd.com/657/">XKCD</a> (Movie Narrative Charts) (<a href="https://xkcd.com/license.html">XKCD License</a>)
+        <div style="float:left; width:50%">
+            <img src="signals_javascript.png"><br>
+            Credit <a href="https://xkcd.com/657/">XKCD</a> (Movie Narrative Charts) (<a href="https://xkcd.com/license.html">XKCD License</a>)
+        </div>
+        <div style="float:right">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Agu6jipKfYw?rel=0&amp;showinfo=0&amp;start=99" frameborder="0" allow="encrypted-media" allowfullscreen></iframe><br>
+            Evan Czaplicki
+        </div>
     </div>
 </div>
 
@@ -181,17 +195,6 @@ Elm architecture: controllers and the "update" method
 </div>
 
 
-<!--
-benefits of using elm
--->
-<div class="slide">
-    Benefits:
-    <ul>
-        <li>Reusable pieces</li>
-        <li>Guaranteed type safety</li>
-        <li>No runtime errors (at least, not on the Elm side)</li>
-    </ul>
-</div>
 
 <div class="slide">
     Our App and Elm
@@ -215,6 +218,7 @@ Keeping state in a functional language
 <div class="slide">
     Keeping state in a functional language
     <ul>
+        <li>The model holds the entire state (tasks, current view, user settings...)</li>
         <li>Keep track of current view (e.g. tab/page) based on a "state" field in the model, which is stored as a string value</li>
         <li>Strings are javascript-compatible for use with saving the model in the browser<br><br></li>
         <li>e.g. <a href="https://github.com/evancz/elm-todomvc/blob/master/Todo.elm">elm-todomvc</a>:<br>
@@ -233,41 +237,19 @@ state: String
     </ul>
 </div>
 
-<!--
-Special Features
--->
-<div class="slide">
-    Model upgrades
-    <ul>
-        <li>As the Model in the Elm program changes, models saved in the old version break</li>
-        <li>Mechanism for managing updates: use javascript to upgrade a saved model for compatibility with newest Elm Model</li>
-        <pre class="prettyprint">// update from pre-version-ids to version 0
-if (
-    // user has used the app before
-    startingState != null
-    // user's model isn't compatible with
-    // the current version of the Elm app
-    && startingState.version == undefined
-) {
-    // upgrade startingState for compatibility
-    // with current elm model
-    ...
-}</pre>
-    </ul>
-</div>
 
 <!--
 Local Storage
 -->
 <div class="slide">
-    Storage
+    Saving/Loading User Inputs
     <ul>
         <li>Local browser storage</li>
         <li>Elm uses ports to communicate with JavaScript</li>
             <ul><li>Ports send or receive messages from JavaScript</li></ul>
         <li>Elm:</li>
         <pre class="prettyprint">
-// Elm code for declaring an interaction with JS.
+// Elm code for declaring a JS-interaction function.
 // Elm "port save" corresponds to JS "thisElmApp.ports.save"
 port save: Model -> Cmd msg
 
@@ -281,7 +263,7 @@ updateWithStorage msg model =
         <li>Javscript:</li>
 <pre class="prettyprint">
 // notice here, "ports.save" is what Elm calls
-// when it gets the "port save" command
+// when it internally receives the "port save" command
 thisElmApp.ports.save.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
 });
@@ -300,7 +282,7 @@ https://guide.elm-lang.org/interop/javascript.html
         <li>Keep Elm code separate from JavaScript code</li>
         <li>Elm ensures that it receives correct information</li>
     </ul><ul>
-        <li style="color:blue">Initialize the Elm App from JS in HTML file:</li>
+        <li style="color:blue">Initialize the Elm App from JS code in the HTML file:</li>
         <pre class="prettyprint">
 // Load data from browser
 var storedState = localStorage.getItem('elm-todo-save');
@@ -317,6 +299,39 @@ todomvc.ports.save.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
 });
         </pre>
+    </ul>
+</div>
+
+
+<!--
+Special Features
+-->
+<div class="slide">
+    Model upgrades
+    <ul>
+        <li>As the Model in the Elm program changes, models saved in the old version break: <button onclick="$('#startupErrorMessage').slideToggle()">Toggle Error Message</button></li>
+            <div style="padding-left:1em; display:none;" id="startupErrorMessage"><hr style="border-color:red"><h2 style="font-weight:normal;"><b>Oops!</b> Something went wrong when starting your Elm program.</h2><pre style="padding-left:1em;">Trying to initialize the `Main` module with an unexpected flag.
+            I tried to convert it to an Elm value, but ran into this problem:
+
+            I ran into the following problems:
+
+            Expecting null but instead got: {}
+            Expecting an object with a field named `debug` but instead got: {}</pre><hr style="border-color:red"></div>
+        <li>Mechanism for managing updates: use javascript to upgrade a saved model for compatibility with newest Elm Model:</li>
+        <pre class="prettyprint">// update from pre-version-ids to version 0
+if (
+    // user has used the app before
+    startingState != null
+    // user's model isn't compatible with
+    // the current version of the Elm app
+    && startingState.version == undefined
+) {
+    // upgrade startingState for compatibility
+    // with current elm model
+    ...
+}</pre>
+        <li>Javascript's mutation bypasses Elm's restrictive environment.</li>
+        <li>Model updates may be possible on the Elm side, but it might introduce dramatic complexity in order to maintain compatibility with JS ports for saving the model</li>
     </ul>
 </div>
 
