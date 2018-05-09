@@ -432,7 +432,7 @@ lifeGoalsView model = div [fullSizeStyle]
             br [] [],
             text "Create a Life Goal",
             br [] [],
-            form [onInput SetText, value model.new_life_goal_title] [],
+            form [onInput UpdateCreateLifeGoalRegister, value model.new_life_goal_title] [],
             form [onSubmit CreateLifeGoal] [
                 text "Description: ",
                 input [
