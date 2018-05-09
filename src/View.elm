@@ -442,10 +442,10 @@ lifeGoalsView model = div [fullSizeStyle]
             br [] [],
             form [onSubmit CreateLifeGoal] [
                 text "Description: ",
-                input [
+                saveLifeGoal(input [
                     inputStyle,
                     onInput UpdateCreateLifeGoalRegister
-              ] [],
+              ]) [],
               br [] [],
               br [] [],
               button [buttonStyle, type_ "submit"] [text "Create"]
