@@ -197,7 +197,6 @@ update msg model =
             settings = resetFilter (model.settings)
             } ! []
 
-
 -- but this is how we update our model with a new life goal called "cleanliness":
 -- { model | life_goals = (LifeGoal "cleanliness" []) :: model.life_goals }
 -- we need a "msg" that enumerates the actions we could take at this step,

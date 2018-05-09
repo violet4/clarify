@@ -38,6 +38,5 @@ type alias Model = {
     state: String,
     settings: List String,
     viewingParentTaskId: Int,
-    version: Int,
-    textSpace: String
+    version: Int
     }

@@ -432,14 +432,12 @@ lifeGoalsView model = div [fullSizeStyle]
             br [] [],
             text "Create a Life Goal",
             br [] [],
-            --textarea [onInput SetText, value model.textSpace],
             form [onSubmit CreateLifeGoal] [
                 text "Description: ",
                 input [
                     inputStyle,
-                    onInput SetText, value model.textSpace
-                    --UpdateCreateLifeGoalRegister
-                 ] [],
+                    onInput UpdateCreateLifeGoalRegister
+              ] [],
               br [] [],
               br [] [],
               button [buttonStyle, type_ "submit"] [text "Create"]
