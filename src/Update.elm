@@ -27,6 +27,8 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
+        -- bogus update for triggering events
+        Noop -> model ! []
         ViewSubTasks taskID ->
             let
                 newTaskRegister = model.newTaskRegister

@@ -1,8 +1,9 @@
 module Msg exposing (..)
 
 type Msg =
+    Noop
     -- simple states
-    TodayState
+    | TodayState
     | CreateState
     | TaskState
     | HelpState
