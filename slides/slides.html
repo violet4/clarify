@@ -264,21 +264,21 @@ https://guide.elm-lang.org/interop/javascript.html
 <div class="slide">
     Elm and JavaScript
     <ul>
-        <li>Use JavaScript and HTML files and ports</li>
+        <li>Use JavaScript and HTML files with ports</li>
+        <li>Keep Elm code separate from JavaScript code</li>
         <li>Ports send or receive messages from JavaScript</li>
         <li>Elm ensures that it receives correct information</li>
-        <li>Keep Elm code separate from JavaScript code</li>
         <pre class="prettyprint">
-// load data from browser
+// Load data from browser
 var storedState = localStorage.getItem('elm-todo-save');
 
-// if loaded data is empty, pass null to Elm
+// If loaded data is empty, pass null to Elm
 var startingState = storedState ? JSON.parse(storedState) : null;
 
-// start the Elm program
+// Start the Elm program
 var todomvc = Elm.Main.fullscreen(startingState);
 
-// Listen for the "save" command from Elm,
+// Listen for the "save" command from Elm
 // and save the model every time Elm asks javascript to save
 todomvc.ports.save.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
