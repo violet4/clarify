@@ -423,12 +423,11 @@ lifeGoalElement lifeGoal =
     ]
 
 -- Saves the progress of inputting life Goals(still in progress)
-saveLifeGoal: String -> Html Msg
+saveLifeGoal: Model -> Html Msg
 saveLifeGoal task =
-    div[width100p] [
-        text task
+    div[] [
+        textarea [onInput SetText, value model.textSpace]
     ]
-
 
 lifeGoalsView: Model -> Html Msg
 lifeGoalsView model = div [fullSizeStyle]
@@ -442,10 +441,10 @@ lifeGoalsView model = div [fullSizeStyle]
             br [] [],
             form [onSubmit CreateLifeGoal] [
                 text "Description: ",
-                saveLifeGoal(input [
+                input [
                     inputStyle,
                     onInput UpdateCreateLifeGoalRegister
-              ]) [],
+              ] [],
               br [] [],
               br [] [],
               button [buttonStyle, type_ "submit"] [text "Create"]
