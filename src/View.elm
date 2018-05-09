@@ -426,7 +426,7 @@ lifeGoalElement lifeGoal =
 saveLifeGoal: String -> Html Msg
 saveLifeGoal task =
     div[width100p] [
-        text("Recent entry: " ++ task)
+        text task
     ]
 
 

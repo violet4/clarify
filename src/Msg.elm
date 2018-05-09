@@ -31,3 +31,5 @@ type Msg =
     | ViewSubTasks Int
     | UpOneLevel
     | TopLevel
+    --Galen edit
+    | SetText String

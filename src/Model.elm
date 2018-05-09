@@ -38,5 +38,7 @@ type alias Model = {
     state: String,
     settings: List String,
     viewingParentTaskId: Int,
-    version: Int
+    version: Int,
+    -- Galen edit
+    text: String
     }
