@@ -426,7 +426,7 @@ lifeGoalElement lifeGoal =
 saveLifeGoal: Model -> Html Msg
 saveLifeGoal task =
     div[] [
-        textarea [onInput SetText, value model.textSpace]
+        textarea [onInput SetText, value task.textSpace]
     ]
 
 lifeGoalsView: Model -> Html Msg
