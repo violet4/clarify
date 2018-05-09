@@ -2,32 +2,75 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clarify</title>
-  <script type="text/javascript" src="js/main.js"></script>
-  <style type="text/css">
-  tr, td {
-      border: solid black 1px;
-  }
-  .taskButtons {
-      border-radius: 5px 0px 0px 5px;
-  }
-  .taskText {
-      border-radius: 0px 5px 5px 0px;
-  }
-  textarea.taskText {
-      font-weight:bold;
-      font-size:15px;
-      background-color:#F4E5FF;
-  }
-  textarea.taskText:focus {
-      background-color:white;
-  }
-  button.taskButton {
-      width: 100%;
-  }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Clarify</title>
+    <script type="text/javascript" src="js/main.js"></script>
+    <style type="text/css">
+    tr, td {
+        border: solid black 1px;
+    }
+    .taskButtons {
+        border-radius: 0px 0px 0px 5px;
+    }
+    .taskText {
+        border-radius: 0px 5px 5px 0px;
+    }
+    textarea.taskText {
+        font-weight:bold;
+        font-size:15px;
+        background-color:#F4E5FF;
+    }
+    textarea.taskText:focus {
+        background-color:white;
+    }
+    button.taskButton {
+        /* make the task buttons all the same width */
+        width: 100%;
+    }
+
+    .button {
+        background-color: #1D417D;
+        color: white;
+    }
+    .buttonLeft {
+        /* top left and bottom left are rounded*/
+        border-radius: 15px 0px 0px 15px;
+    }
+    .buttonRight {
+        border-radius: 0px 15px 15px 0px;
+    }
+    .button:active {
+        background-color:#142A4F;
+    }
+    /*https://codepen.io/lukeocom/pen/mHnvl*/
+    .verticalLeft {
+        transform:rotate(7deg);
+        -ms-transform:rotate(270deg); /* IE 9 */
+        -moz-transform:rotate(270deg); /* Firefox */
+        -webkit-transform:rotate(270deg); /* Safari and Chrome */
+        -o-transform:rotate(270deg); /* Opera */
+    }
+    .verticalRight {
+        transform:rotate(7deg); /* ??? */
+        -ms-transform:rotate(90deg); /* IE 9 */
+        -moz-transform:rotate(90deg); /* Firefox */
+        -webkit-transform:rotate(90deg); /* Safari and Chrome */
+        -o-transform:rotate(90deg); /* Opera */
+    }
+
+    /*https://stackoverflow.com/a/4407335/2821804*/
+    .noselect {
+      -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+         -khtml-user-select: none; /* Konqueror HTML */
+           -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+                user-select: none; /* Non-prefixed version, currently
+                                      supported by Chrome and Opera */
+    }
+
+</style>
 </head>
 
 <body>
@@ -80,6 +123,11 @@ if (startingState != null && startingState.version == undefined) {
 var todomvc = Elm.Main.fullscreen(startingState);
 todomvc.ports.save.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
+});
+
+
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
 });
 </script>
 
