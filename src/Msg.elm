@@ -24,6 +24,7 @@ type Msg =
     | DeleteTask Int
     | AddToday Int
     | RemoveToday Int
+    | MoveTaskUp Int
     | UpdateDebug
     | SettingsViewState
     | ToggleSetting String

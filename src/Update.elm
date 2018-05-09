@@ -27,7 +27,7 @@ update msg model =
 --        CreateState
 --        -- action states
 --        LifeGoalsState
-        -- bogus update for triggering events
+        -- bogus update, for triggering events
         Noop -> model ! []
         ViewSubTasks taskID ->
             let
@@ -189,7 +189,20 @@ update msg model =
         AddToday taskID ->
             {model|todayTaskIds=taskID :: model.todayTaskIds} ! []
         RemoveToday taskID ->
-           {model|todayTaskIds=List.filter (\tid -> tid /= taskID) model.todayTaskIds} ! []
+            {model|todayTaskIds=List.filter (\tid -> tid /= taskID) model.todayTaskIds} ! []
+        MoveTaskUp taskID ->
+            let
+                parentTaskId =
+                    case List.head (List.filter (\t -> t.taskID == taskID) model.tasks) of
+                        Just task -> task.parentTaskId
+                        Nothing -> -1
+                parentParentTaskId =
+                    case List.head (List.filter (\t -> t.taskID == parentTaskId) model.tasks) of
+                        Just task -> task.parentTaskId
+                        Nothing -> -1
+                tasks = List.map (\t -> if t.taskID == taskID then {t|parentTaskId=parentParentTaskId} else t) model.tasks
+            in
+                {model|tasks=tasks, debug="taskid " ++ toString taskID ++ ", parent task id " ++ toString parentTaskId ++ ", parent parent task id " ++ toString parentParentTaskId} ! []
         -- even if we don't know what the input was,
         -- we should still update the state in case
         -- user clicked on another tab!

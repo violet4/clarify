@@ -237,6 +237,13 @@ taskToTableRow model task =
                     class "taskButton"
                 ] [text "Add to Today"],
 
+            -- "move up" button
+            button [
+                buttonStyle,
+                onClick (MoveTaskUp task.taskID),
+                class "taskButton"
+            ] [text "Move up"],
+
             -- delete button
             button [buttonStyle,
                 onClick (DeleteTask task.taskID),
@@ -618,11 +625,11 @@ mainViewHtmlNavigationBar = div [] [
 view: Model -> Html Msg
 view model =
     div [fullSizeStyle] [
-        text (if List.member "Show debug info" model.settings then (toString model.debug) else ""),
         htmlAppHeader,
         htmlNavigationBar model,
         hr [] [],
+        currentView model,
+        text (if List.member "Show debug info" model.settings then (toString model.debug) else ""),
         text (if List.member "Show debug info" model.settings then (toString model) else ""),
-        if List.member "Show debug info" model.settings then hr [] [] else text "",
-        currentView model
+        if List.member "Show debug info" model.settings then hr [] [] else text ""
     ]
