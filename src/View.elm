@@ -258,6 +258,11 @@ taskToTableRow model task =
                 class "taskButton"
             ] [text "Move up"],
 
+            -- "Move down" selector.
+            -- ability to move a task to be a subtask
+            -- of one of its siblings
+            newParentSelector model task,
+
             -- delete button
             button [buttonStyle,
                 onClick (DeleteTask task.taskID),
@@ -280,10 +285,6 @@ taskToTableRow model task =
 
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
-
-            -- ability to move a task to be a subtask
-            -- of one of its siblings
-            newParentSelector model task,
 
             -- estimated minutes
             estimatedMinutesSelector task,
