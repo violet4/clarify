@@ -345,11 +345,10 @@ taskToTableRow model task completed =
         td [wide99percentStyle, class "taskText"] [
             textarea [
                 class "taskText",
-                inputStyle,
+                --inputStyle,
                 Html.Attributes.defaultValue task.title,
                 disabled completed,
-                onInput (UpdateTaskDescription task.taskID),
-                style [("width", "95%"), ("height", "100px")]
+                onInput (UpdateTaskDescription task.taskID)
             ] []
         ]
 
@@ -505,12 +504,8 @@ taskView model completed =
 
                 -- change depth buttons
                 br [] [],
-                button [onClick TopLevel, buttonStyle] [text "Top Level"],
-                br [] [],
-                button [onClick UpOneLevel, buttonStyle] [text "Go up"],
-
-
-                br [] [], br [] [],
+                button [onClick TopLevel, buttonStyle, width100p] [text "Top Level"],
+                button [onClick UpOneLevel, buttonStyle, width100p] [text "Go up"],
 
                 -- "completed page" warning about not editing tasks
                 (if completed
