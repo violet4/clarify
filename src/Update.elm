@@ -19,6 +19,7 @@ findTaskById tasks taskID =
     List.head (List.filter (\task -> task.taskID /= taskID) tasks)
 
 sortSettings = [
+        "Eisenhower",
         "Life Goal",
         "Estimated Minutes",
         "Description"

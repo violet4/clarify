@@ -165,6 +165,7 @@ sortBySelectorButtons model =
     div [] [
         text "Sort by: ",
         sortSelectorButton "None",
+        sortSelectorButton "Eisenhower",
         sortSelectorButton "Life Goal",
         sortSelectorButton "Estimated Minutes",
         sortSelectorButton "Description"
@@ -265,8 +266,8 @@ taskToTableRow model task =
 
             -- important/urgent
             div [style [("width", "100%"), ("height", "100%"), ("text-align", "center")]] [
-                (if task.important then exclaimRed else exclaimGray) task.taskID,
-                (if task.urgent then fireIcon else waterIcon) task.taskID
+                (if task.urgent then urgentIcon else notUrgentIcon) task.taskID,
+                (if task.important then importantIcon else notImportantIcon) task.taskID
             ],
 
             -- "View Siblings" button, if on the today page
@@ -353,13 +354,36 @@ taskListToHtmlTable model tasks =
         (List.map (\t -> taskToTableRow model t) tasks)
     )
 
+eisenhowerSort: Task -> Int
+eisenhowerSort task =
+    if task.important then (
+        if task.urgent then 1
+        else 2
+    )
+    else (
+        if task.urgent then 3
+        else 4
+    )
+
+sortTasks: Model -> List Task -> List Task
 sortTasks model tasks =
+    -- life goal
     if List.member "Life Goal" model.settings
     then (List.sortBy .lifeGoalID tasks)
+
+    -- eisenhower
+    else if List.member "Eisenhower" model.settings
+    then (List.sortBy eisenhowerSort tasks)
+
+    -- estimated minutes
     else if List.member "Estimated Minutes" model.settings
     then (List.sortBy .estimatedMinutes tasks)
+
+    -- description
     else if List.member "Description" model.settings
     then (List.sortBy .title tasks)
+
+    -- none (taskId)
     else (List.sortBy .taskID tasks)
 
 taskFilterTextInput =
@@ -645,10 +669,10 @@ mainViewHtmlNavigationBar = div [] [
 
 makeIcon path msg = img [src path, Html.Attributes.height 25, onClick msg] []
 
-exclaimRed taskId = makeIcon "images/exclaim_red.png" (ToggleImportance taskId)
-exclaimGray taskId = makeIcon "images/exclaim_gray.png" (ToggleImportance taskId)
-fireIcon taskId = makeIcon "images/fire.png" (ToggleUrgency taskId)
-waterIcon taskId = makeIcon "images/water.png" (ToggleUrgency taskId)
+importantIcon taskId = makeIcon "images/important.png" (ToggleImportance taskId)
+notImportantIcon taskId = makeIcon "images/notImportant.png" (ToggleImportance taskId)
+urgentIcon taskId = makeIcon "images/urgent.png" (ToggleUrgency taskId)
+notUrgentIcon taskId = makeIcon "images/notUrgent.png" (ToggleUrgency taskId)
 
 -- we need to create a state that holds the current state -
 -- are we looking at life goals, priorities, tasks, or
