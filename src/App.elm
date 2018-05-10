@@ -46,6 +46,8 @@ defaultModel = Model
         Task "clean desk"  False 0 0 0 -1 False False,
         Task "vacuum room" False 0 1 0 -1 False False
     ]
+    -- completed_tasks
+    []
     -- starting state
 --    TodayState
     --TaskState     this was causing an error so I commented it out. It doesn't seem to match with anything in Model.
@@ -60,7 +62,7 @@ defaultModel = Model
     []
     -- viewingParentTaskId
     -1
-    1 -- version
+    2 -- version
 
 -- I read https://www.reddit.com/r/elm/comments/4j2fg6/finding_the_last_list_element/d33671d/
 -- and then re-wrote it from scratch myself.

@@ -10,12 +10,38 @@ import Html exposing (
     )
 import Html.Attributes exposing (
   href, style, align, id, type_, value, property, attribute, class,
-  width, rowspan, src
+  width, rowspan, src, disabled
   )
 import Html.Events exposing (onClick, onSubmit, onInput)
 
 import Msg exposing (..)
 import Model exposing (..)
+
+
+currentView: Model -> Html Msg
+currentView model =
+    case model.state of
+        -- each of these takes a model
+        "TodayState" -> todayView model
+        "TaskState" -> taskView model False
+        "LifeGoalsState" -> lifeGoalsView model
+        "LifeGoalState" -> lifeGoalsView model
+        "SettingsViewState" -> settingsView model
+        "HelpState" -> helpView
+        "CompletedState" -> completedView model
+        _ -> todayView model
+
+view: Model -> Html Msg
+view model =
+    div [fullSizeStyle] [
+        htmlAppHeader,
+        htmlNavigationBar model,
+        hr [] [],
+        currentView model,
+        text (if List.member "Show debug info" model.settings then (toString model.debug) else ""),
+        text (if List.member "Show debug info" model.settings then (toString model) else ""),
+        if List.member "Show debug info" model.settings then hr [] [] else text ""
+    ]
 
 -- styles ######################################################################
 fullSizeStyle = style [
@@ -45,24 +71,14 @@ htmlAppHeader = div [style [ display flex_
   ]] [text "Clarify"]
 
 
-redFont = style [color "white", fontFamily "sans-serif", fontWeight "bold", fontSize "17px"]
-noStyle = style [fontFamily "sans-serif", fontSize "15px"]
+activeTabStyle = style [color "white", fontFamily "sans-serif", fontWeight "bold", fontSize "17px", backgroundColor "#4B206A"]
+inactiveTabStyle = style [fontFamily "sans-serif", fontSize "15px"]
 
 buttonStyle = style [fontWeight "600", borderRadius "10px", padding "6px", paddingLeft "10px", paddingRight "10px", backgroundColor "#1D417D", color "white"]
 tabStyle = style [borderRadius "2px", padding "4px", marginLeft "-2px", marginRight "-2px", marginBottom "-5px", backgroundColor "#1D417D", borderColor "#1D417D", color "white"]
 
 inputStyle = style[ borderRadius "6px", padding "5px", margin "2px"]
 
-currentView model =
-    case model.state of
-        -- each of these takes a model
-        "TodayState" -> todayView model
-        "TaskState" -> taskView model
-        "LifeGoalsState" -> lifeGoalsView model
-        "LifeGoalState" -> lifeGoalsView model
-        "SettingsViewState" -> settingsView model
-        "HelpState" -> helpView
-        _ -> todayView model
 
 helpView = ul [] [
         li [] [text
@@ -125,8 +141,8 @@ lifeGoalSelectorForCreating life_goals=
         ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
     )
 
-lifeGoalSelectorForEditing life_goals task =
-    select [inputStyle, style [Style.width "99%"], (onInput (UpdateTaskGoal task.taskID))] (
+lifeGoalSelectorForEditing life_goals task completed =
+    select [inputStyle, style [Style.width "99%"], (onInput (UpdateTaskGoal task.taskID)), disabled completed] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
@@ -147,7 +163,7 @@ newParentSelector model task =
                 model.tasks
             ))
 
-estimatedMinutesSelector task =
+estimatedMinutesSelector task completed =
     input [
         inputStyle,
         style [Style.width "80%"],
@@ -155,7 +171,8 @@ estimatedMinutesSelector task =
         onInput (UpdateTaskEstimatedMinutes task.taskID),
         value (toString task.estimatedMinutes),
         Html.Attributes.min "0",
-        Html.Attributes.max "9999"
+        Html.Attributes.max "9999",
+        disabled completed
     ] []
 
 sortSelectorButton fieldName =
@@ -207,7 +224,8 @@ countAllSubtasks tasks taskID =
 
 height100p = style [("height", "100%")]
 
-taskToTableRow model task =
+taskToTableRow: Model -> Task -> Bool -> Html Msg
+taskToTableRow model task completed =
     tr [] [
 
 
@@ -241,7 +259,9 @@ taskToTableRow model task =
             text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
 
             -- "add/remove from today" button
-            if (List.member task.taskID model.todayTaskIds)
+            (if completed
+            then text ""
+            else if (List.member task.taskID model.todayTaskIds)
                 then button [buttonStyle,
                     onClick (RemoveToday task.taskID),
                     class "taskButton"
@@ -250,19 +270,23 @@ taskToTableRow model task =
                     buttonStyle,
                     onClick (AddToday task.taskID),
                     class "taskButton"
-                ] [text "Add to Today"],
+                ] [text "Add to Today"]),
 
             -- "move up" button
-            button [
+            (if completed
+            then text ""
+            else button [
                 buttonStyle,
                 onClick (MoveTaskUp task.taskID),
                 class "taskButton"
-            ] [text "Move up"],
+            ] [text "Move up"]),
 
             -- "Move down" selector.
             -- ability to move a task to be a subtask
             -- of one of its siblings
-            newParentSelector model task,
+            (if completed
+            then text ""
+            else newParentSelector model task),
 
             -- important/urgent
             div [style [("width", "100%"), ("height", "100%"), ("text-align", "center")]] [
@@ -285,19 +309,35 @@ taskToTableRow model task =
             else text "",
 
             -- ability to select a life goal for this task
-            (lifeGoalSelectorForEditing model.life_goals task),
+            (lifeGoalSelectorForEditing model.life_goals task completed),
 
             -- estimated minutes
-            estimatedMinutesSelector task,
+            estimatedMinutesSelector task completed,
             br [] [],
             text "(Minutes)",
             br [] [],
 
-            -- delete button
-            button [buttonStyle,
-                onClick (DeleteTask task.taskID),
-                class "taskButton"
-            ] [text "Delete"]
+            -- un-complete button
+            (if completed
+            then button [
+                    buttonStyle,
+                    class "taskButton",
+                    onClick (UncompleteTask task.taskID)
+                ] [text "Un-complete"]
+            else text ""),
+
+            -- delete/complete button
+            (if completed
+            then
+                button [buttonStyle,
+                    onClick (DeleteTask task.taskID),
+                    class "taskButton"
+                ] [text "Delete"]
+            else button [
+                    onClick (CompleteTask task.taskID),
+                    class "taskButton",
+                    buttonStyle
+                ] [text "Complete"])
 
         ],
 
@@ -307,6 +347,7 @@ taskToTableRow model task =
                 class "taskText",
                 inputStyle,
                 Html.Attributes.defaultValue task.title,
+                disabled completed,
                 onInput (UpdateTaskDescription task.taskID),
                 style [("width", "95%"), ("height", "100px")]
             ] []
@@ -316,7 +357,7 @@ taskToTableRow model task =
     ]
 
 
-taskListToHtmlTable model tasks =
+taskListToHtmlTable model tasks completed =
     let
         numRows = 1 + (List.length tasks)
     in
@@ -351,7 +392,7 @@ taskListToHtmlTable model tasks =
         ]) ::
 
         -- list of tasks, turned into table rows
-        (List.map (\t -> taskToTableRow model t) tasks)
+        (List.map (\t -> taskToTableRow model t completed) tasks)
     )
 
 eisenhowerSort: Task -> Int
@@ -424,12 +465,22 @@ filterTasks tasks model settings =
         -- need to filter out tasks by the filterParts
         List.filter (\t -> taskMatchesFilters t model filterParts) tasks
 
+completedView: Model -> Html Msg
+completedView model =
+    taskView model True
+
 -- tasks view shows all tasks
-taskView: Model -> Html Msg
-taskView model =
+taskView: Model -> Bool -> Html Msg
+taskView model completed =
     let
-        tasksFromThisParent = List.filter (\t -> t.parentTaskId == model.viewingParentTaskId) model.tasks
-        -- filter based on user preferences
+        tasks = if not completed then model.tasks else model.completed_tasks
+        tasksFromThisParent =
+            if completed
+            -- don't filter completed tasks
+            then tasks
+            else List.filter (\t -> t.parentTaskId == model.viewingParentTaskId) tasks
+
+        -- hide tasks from tasks page if it's on the today page (if user preference is set)
         taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) tasksFromThisParent)
         filteredTaskViewTasks = filterTasks taskViewTasks model model.settings
         sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
@@ -458,11 +509,19 @@ taskView model =
                 br [] [],
                 button [onClick UpOneLevel, buttonStyle] [text "Go up"],
 
+
                 br [] [], br [] [],
+
+                -- "completed page" warning about not editing tasks
+                (if completed
+                then span [style [("color", "red")]] [text "WARNING: Fields cannot be edited on this page! Only deleted or Un-completed!"]
+                else text ""),
+
                 -- list of current tasks
-                taskListToHtmlTable model sortedTaskViewTasks
+                taskListToHtmlTable model sortedTaskViewTasks completed
             ]
             -- section to create a new task
+            (if completed then [] else
             [
                 br [] [],
                 -- form to create a new task
@@ -496,7 +555,7 @@ taskView model =
                     button [buttonStyle, type_ "submit" ] [text "Create"]
                 ]
                 -- end form to create a new task
-            ]
+            ])
         )
 
 tasksEstimatedMinutesSum tasks =
@@ -529,7 +588,7 @@ todayView model = div [fullSizeStyle] (
             -- filter text input
             text "Filter Tasks: ",
             taskFilterTextInput,
-            taskListToHtmlTable model filteredTodayTasks
+            taskListToHtmlTable model filteredTodayTasks False
         ])
         else [
             text "You don't have any tasks for today!",
@@ -584,15 +643,16 @@ htmlNavigationBar model = div [] [
             -- these links don't take us anywhere yet,
             -- but at least we can click them.
             (tabStyle),
-            (href "#"),
             (onClick TodayState),
-            (if model.state == "TodayState" then redFont else noStyle)
+            (if model.state == "TodayState" then activeTabStyle else inactiveTabStyle)
         ] [text "Today"],
         -- put some spacing between the links
         text " ",
         todayLinkButton model,
         text " ",
         lifeGoalsLinkButton model,
+        text " ",
+        completedTabButton model,
         text " ",
         settingsLinkButton model,
         text " ",
@@ -602,50 +662,52 @@ htmlNavigationBar model = div [] [
         
     ]
 
+completedTabButton model =
+    button [
+        (tabStyle),
+        (onClick CompletedState),
+        (if model.state == "CompletedState" then activeTabStyle else inactiveTabStyle)
+    ] [text "Completed"]
+
 helpLinkButton model =
     button [
         (tabStyle),
         (onClick HelpState),
-        (if model.state == "HelpState" then redFont else noStyle)
+        (if model.state == "HelpState" then activeTabStyle else inactiveTabStyle)
     ] [text "Help"]
 
 lifeGoalsLinkButton model =
     button [
         (tabStyle),
-        (href "#"),
         (onClick LifeGoalsState),
-        (if model.state == "LifeGoalsState" then redFont else noStyle)
+        (if model.state == "LifeGoalsState" then activeTabStyle else inactiveTabStyle)
     ] [text "Life Goals"]
 
 settingsLinkButton model =
     button [
         (tabStyle),
-        (href "#"),
         (onClick SettingsViewState),
-        (if model.state == "SettingsViewState" then redFont else noStyle)
+        (if model.state == "SettingsViewState" then activeTabStyle else inactiveTabStyle)
     ] [text "Settings"]
 
 todayLinkA model =
     a [
-        (href "#"),
         (onClick TaskState),
-        (if model.state == "TaskState" then redFont else noStyle)
+        (if model.state == "TaskState" then activeTabStyle else inactiveTabStyle)
     ] [text "Tasks"]
 
 todayLinkButton model =
     button [
         (tabStyle),
-        (href "#"),
         (onClick TaskState),
-        (if model.state == "TaskState" then redFont else noStyle)
+        (if model.state == "TaskState" then activeTabStyle else inactiveTabStyle)
     ] [text "Tasks"]
 
 createViewButton model =
     button [
         (tabStyle),
-        (href "#"),
         (onClick CreateState),
-        (if model.state == "CreateState" then redFont else noStyle)
+        (if model.state == "CreateState" then activeTabStyle else inactiveTabStyle)
     ] [text "Create"]
 
 
@@ -653,9 +715,6 @@ mainViewHtmlNavigationBar = div [] [
         -- these links need to be attached to onClick events,
         -- or something of the like
         a [
-            -- these links don't take us anywhere yet,
-            -- but at least we can click them.         
-            (href "#"),
             (onClick TodayState)
         ] [text "Today"],
         -- put some spacing between the links
@@ -674,20 +733,3 @@ notImportantIcon taskId = makeIcon "images/notImportant.png" (ToggleImportance t
 urgentIcon taskId = makeIcon "images/urgent.png" (ToggleUrgency taskId)
 notUrgentIcon taskId = makeIcon "images/notUrgent.png" (ToggleUrgency taskId)
 
--- we need to create a state that holds the current state -
--- are we looking at life goals, priorities, tasks, or
--- today? (i.e. create a corresponding version of "type Msg
--- = Increment | Decrement") depending on the state we're
--- in, we need to show the model in a way that is useful,
--- with interactivity.
-view: Model -> Html Msg
-view model =
-    div [fullSizeStyle] [
-        htmlAppHeader,
-        htmlNavigationBar model,
-        hr [] [],
-        currentView model,
-        text (if List.member "Show debug info" model.settings then (toString model.debug) else ""),
-        text (if List.member "Show debug info" model.settings then (toString model) else ""),
-        if List.member "Show debug info" model.settings then hr [] [] else text ""
-    ]

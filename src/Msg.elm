@@ -8,6 +8,7 @@ type Msg =
     | TaskState
     | HelpState
     | LifeGoalState
+    | CompletedState
     -- action states
     | CreateLifeGoal
     | CreateLifeGoalState
@@ -22,6 +23,8 @@ type Msg =
     | UpdateLifeGoalDescription Int String
     | DeleteLifeGoal Int
     | DeleteTask Int
+    | CompleteTask Int
+    | UncompleteTask Int
     | AddToday Int
     | RemoveToday Int
     | MoveTaskUp Int

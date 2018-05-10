@@ -206,8 +206,26 @@ update msg model =
         DeleteTask id -> {
             model |
             debug = toString msg,
-            tasks = List.filter (\task -> task.taskID /= id) model.tasks
+            completed_tasks = List.filter (\task -> task.taskID /= id) model.completed_tasks
             } ! []
+
+        UncompleteTask id ->
+            let
+                completedTasks = List.filter (\t -> t.taskID /= id) model.completed_tasks
+                uncompletedTaskInList = List.filter (\t -> t.taskID == id) model.completed_tasks
+                uncompletedTasks = List.concat [model.tasks, uncompletedTaskInList]
+            in
+                {model|
+                    completed_tasks=completedTasks,
+                    tasks=uncompletedTasks} ! []
+
+        CompleteTask id ->
+            let
+                incompleteTasks = List.filter (\t -> t.taskID /= id) model.tasks
+                completedTaskInList = List.filter (\t -> t.taskID == id) model.tasks
+                completedTasks = List.concat [model.completed_tasks, completedTaskInList]
+            in
+                {model|completed_tasks=completedTasks, tasks=incompleteTasks} ! []
 
         AddToday taskID ->
             {model|todayTaskIds=taskID :: model.todayTaskIds} ! []
