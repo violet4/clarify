@@ -132,11 +132,13 @@ if (startingState.version == 0) {
     });
     startingState.newTaskRegister.urgent = false;
     startingState.newTaskRegister.important = false;
+    startingState.version = 1;
 }
 
 // if (startingState.version == 1) {
 //     // once we move from version 0 to version 1, we need
 //     // to populate this with the updates.
+//     startingState.version = 2;
 // }
 
 if (startingState != null) {
