@@ -1,7 +1,19 @@
-module Update exposing (update)
+port module Update exposing (update, updateWithStorage, save)
 
 import Msg exposing (..)
 import Model exposing (..)
+
+
+port save: Model -> Cmd msg
+port updateViewingParentTaskId: Int -> Cmd msg
+
+
+updateWithStorage: Msg -> Model -> (Model, Cmd Msg)
+updateWithStorage msg model =
+    let
+        (newModel, cmds) = update msg model
+    in
+        (newModel, Cmd.batch [save newModel, cmds])
 
 findTaskById tasks taskID =
     List.head (List.filter (\task -> task.taskID /= taskID) tasks)
@@ -39,9 +51,9 @@ update msg model =
                 newTaskRegister=updatedTaskRegister,
                 -- this allows us to jump from the today page
                 state="TaskState"
-            } ! []
+            } ! [updateViewingParentTaskId taskID]
         TopLevel ->
-            {model|viewingParentTaskId= -1} ! []
+            {model|viewingParentTaskId= -1} ! [updateViewingParentTaskId -1]
         UpOneLevel ->
             let
                 parentTaskInList = List.filter (\t -> t.taskID == model.viewingParentTaskId) model.tasks
@@ -49,7 +61,7 @@ update msg model =
                     Nothing -> -1
                     Just task -> task.parentTaskId
             in
-                {model|viewingParentTaskId=parentTaskId} ! []
+                {model|viewingParentTaskId=parentTaskId} ! [updateViewingParentTaskId parentTaskId]
         FilterTasks filter ->
             let settingsWithoutFilter = List.filter (\s -> not (String.startsWith "filter " s)) model.settings
             in {model|settings=("filter " ++ filter)::settingsWithoutFilter} ! []

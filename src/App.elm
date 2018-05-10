@@ -4,8 +4,7 @@ import Html exposing (Html)
 import Model exposing (..)
 import Msg exposing (..)
 import View exposing (view)
-import Update exposing (update)
-import ClarifyPorts exposing(updateWithStorage, save)
+import Update exposing (update, updateWithStorage, save)
 
 
 main: Program (Maybe Model) Model Msg

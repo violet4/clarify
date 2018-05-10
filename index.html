@@ -129,9 +129,30 @@ if (startingState != null && startingState.version == undefined) {
 //     // to populate this with the updates.
 // }
 
+if (startingState != null) {
+    // allow urls to point directly to tasks (or at least to a task's subtasks)
+    hash = document.location.hash;
+    if (hash != "") {
+        hash_parts = hash.split("=");
+        hash_key = hash_parts[0];
+        if (hash_key == "parent") {
+            taskID = parseInt(hash_parts[1]);
+            startingState.viewingParentTaskId = taskID;
+        }
+    }
+}
+
 
 var clarify_div = document.getElementById("clarify");
 var todomvc = Elm.Main.embed(clarify_div, startingState);
+
+todomvc.ports.updateViewingParentTaskId.subscribe(function(viewingParentTaskId) {
+// port updateViewingParentTaskId: Int -> Cmd msg
+// updateViewingParentTaskId taskID
+    console.log("Hello!");
+    document.location.hash = "parent=" + viewingParentTaskId;
+});
+
 todomvc.ports.save.subscribe(function(state) {
     console.log("received save message");
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
