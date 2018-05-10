@@ -1,7 +1,7 @@
 module Model exposing (..)
 
 createEmptyTask: Int -> Int -> Task
-createEmptyTask taskID parentTaskID = Task "" False -1 taskID 0 parentTaskID
+createEmptyTask taskID parentTaskID = Task "" False -1 taskID 0 parentTaskID False False
 
 type alias LifeGoalID = Int
 type alias Task = {
@@ -11,6 +11,8 @@ type alias Task = {
     , taskID: Int
     , estimatedMinutes: Int
     , parentTaskId: Int
+    , important: Bool
+    , urgent: Bool
     }
 
 type alias Today = {

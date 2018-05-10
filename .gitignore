@@ -14,3 +14,6 @@ src/main.js
 .idea/
 clarify.iml
 *.js
+images/fire_large.png
+images/water_large.png
+mica_make_slides.bash

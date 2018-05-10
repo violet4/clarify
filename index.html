@@ -124,7 +124,17 @@ if (startingState != null && startingState.version == undefined) {
     startingState.settings = [];
 }
 
-// if (startingState.version == 0) {
+// version update from 0 to 1
+if (startingState.version == 0) {
+    startingState.tasks.map(function(task){
+        task.urgent = false;
+        task.important = false;
+    });
+    startingState.newTaskRegister.urgent = false;
+    startingState.newTaskRegister.important = false;
+}
+
+// if (startingState.version == 1) {
 //     // once we move from version 0 to version 1, we need
 //     // to populate this with the updates.
 // }
@@ -149,12 +159,10 @@ var todomvc = Elm.Main.embed(clarify_div, startingState);
 todomvc.ports.updateViewingParentTaskId.subscribe(function(viewingParentTaskId) {
 // port updateViewingParentTaskId: Int -> Cmd msg
 // updateViewingParentTaskId taskID
-    console.log("Hello!");
     document.location.hash = "parent=" + viewingParentTaskId;
 });
 
 todomvc.ports.save.subscribe(function(state) {
-    console.log("received save message");
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
     var model_textbox = document.getElementById("model");
     if (model_textbox != null) {

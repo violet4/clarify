@@ -6,11 +6,11 @@ import Style exposing (..)
 import Html exposing (
     div, text, Html, a, br, hr, button, input, form,
     select, option, map, table, tr, td, tbody,
-    textarea, ul, li, h2, span
+    textarea, ul, li, h2, span, img
     )
 import Html.Attributes exposing (
   href, style, align, id, type_, value, property, attribute, class,
-  width, rowspan
+  width, rowspan, src
   )
 import Html.Events exposing (onClick, onSubmit, onInput)
 
@@ -268,6 +268,10 @@ taskToTableRow model task =
                 onClick (DeleteTask task.taskID),
                 class "taskButton"
             ] [text "Delete"],
+
+            -- important/urgent
+            (if task.important then exclaimRed else exclaimGray) task.taskID,
+            (if task.urgent then fireIcon else waterIcon) task.taskID,
 
             -- "View Siblings" button, if on the today page
             if (model.state == "TodayState") then
@@ -634,6 +638,13 @@ mainViewHtmlNavigationBar = div [] [
 --            (onClick LifeGoalsState)
         ] [text "Life Goals"]
     ]
+
+makeIcon path msg = img [src path, Html.Attributes.height 25, onClick msg] []
+
+exclaimRed taskId = makeIcon "images/exclaim_red.png" (ToggleImportance taskId)
+exclaimGray taskId = makeIcon "images/exclaim_gray.png" (ToggleImportance taskId)
+fireIcon taskId = makeIcon "images/fire.png" (ToggleUrgency taskId)
+waterIcon taskId = makeIcon "images/water.png" (ToggleUrgency taskId)
 
 -- we need to create a state that holds the current state -
 -- are we looking at life goals, priorities, tasks, or

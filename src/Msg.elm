@@ -35,3 +35,5 @@ type Msg =
     | ViewSubTasks Int
     | UpOneLevel
     | TopLevel
+    | ToggleUrgency Int
+    | ToggleImportance Int

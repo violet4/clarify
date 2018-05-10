@@ -43,8 +43,8 @@ defaultModel = Model
     -- tasks
     [
         -- Task title complete lifeGoalID taskID estimatedMinutes parentTaskId
-        Task "clean desk"  False 0 0 0 -1,
-        Task "vacuum room" False 0 1 0 -1
+        Task "clean desk"  False 0 0 0 -1 False False,
+        Task "vacuum room" False 0 1 0 -1 False False
     ]
     -- starting state
 --    TodayState

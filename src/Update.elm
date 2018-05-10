@@ -41,6 +41,16 @@ update msg model =
 --        LifeGoalsState
         -- bogus update, for triggering events
         Noop -> model ! []
+        ToggleImportance taskId ->
+            let
+                tasks = List.map (\t -> if t.taskID == taskId then {t|important=not t.important} else t) model.tasks
+            in
+                {model|tasks=tasks} ! []
+        ToggleUrgency taskId ->
+            let
+                tasks = List.map (\t -> if t.taskID == taskId then {t|urgent=not t.urgent} else t) model.tasks
+            in
+                {model|tasks=tasks} ! []
         ViewSubTasks taskID ->
             let
                 newTaskRegister = model.newTaskRegister
