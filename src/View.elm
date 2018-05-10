@@ -119,8 +119,7 @@ getLifeGoal goals goalId =
         Maybe.Nothing -> {title = "Nothing", priorities = [], id = -10}
 
 lifeGoalSelectorForCreating life_goals=
-    -- TODO need to map each life goal to its ID and give it a Msg message so we can update the task
-    select [inputStyle, style [borderRadius "6px", padding "6px"], onInput ((UpdateTaskRegister "lifeGoal"))] (
+    select [inputStyle, onInput ((UpdateTaskRegister "lifeGoal"))] (
         List.map
         (\lifeGoal -> (option [value (toString lifeGoal.id)] [text lifeGoal.title]))
         ({title = "Life Goal Selection", priorities = [], id = 0} :: life_goals)
@@ -132,6 +131,21 @@ lifeGoalSelectorForEditing life_goals task =
         (\lifeGoal -> (option [value (toString lifeGoal.id), Html.Attributes.selected (lifeGoal.id == task.lifeGoalID)] [text lifeGoal.title]))
         life_goals
     )
+
+-- move task below one of its siblings
+-- list titles of siblings
+-- include a Msg that sets parent
+newParentSelector model task =
+    select
+        [onInput (MoveTaskDown task.taskID)]
+        ((option [Html.Attributes.selected True] [text "Move down"])
+        :: List.map
+            (\t -> option [value (toString t.taskID)] [text ((String.slice 0 10 t.title) ++ "...")])
+            -- get the siblings of this task
+            (List.filter
+                (\t -> t.parentTaskId == task.parentTaskId && t.taskID /= task.taskID)
+                model.tasks
+            ))
 
 estimatedMinutesSelector task =
     input [
@@ -266,7 +280,11 @@ taskToTableRow model task =
 
             -- ability to select a life goal for this task
             (lifeGoalSelectorForEditing model.life_goals task),
-            
+
+            -- ability to move a task to be a subtask
+            -- of one of its siblings
+            newParentSelector model task,
+
             -- estimated minutes
             estimatedMinutesSelector task,
             br [] [],

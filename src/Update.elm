@@ -190,6 +190,18 @@ update msg model =
             {model|todayTaskIds=taskID :: model.todayTaskIds} ! []
         RemoveToday taskID ->
             {model|todayTaskIds=List.filter (\tid -> tid /= taskID) model.todayTaskIds} ! []
+        MoveTaskDown thisTaskId newParentTaskIdString ->
+            let
+                newParentTaskId = Result.withDefault -1 (String.toInt newParentTaskIdString)
+                updatedTasks = List.map (\t ->
+                    if t.taskID == thisTaskId
+                        -- if this somehow fails, don't accidentally move this
+                        -- task to the top level.
+                        && newParentTaskId /= -1
+                    then {t|parentTaskId=newParentTaskId}
+                    else t) model.tasks
+            in
+            {model|tasks=updatedTasks} ! []
         MoveTaskUp taskID ->
             let
                 parentTaskId =

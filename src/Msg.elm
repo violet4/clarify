@@ -25,6 +25,8 @@ type Msg =
     | AddToday Int
     | RemoveToday Int
     | MoveTaskUp Int
+    -- MoveTaskDown thisTaskId newParentTaskId
+    | MoveTaskDown Int String
     | UpdateDebug
     | SettingsViewState
     | ToggleSetting String
