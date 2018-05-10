@@ -263,12 +263,6 @@ taskToTableRow model task =
             -- of one of its siblings
             newParentSelector model task,
 
-            -- delete button
-            button [buttonStyle,
-                onClick (DeleteTask task.taskID),
-                class "taskButton"
-            ] [text "Delete"],
-
             -- important/urgent
             div [style [("width", "100%"), ("height", "100%"), ("text-align", "center")]] [
                 (if task.important then exclaimRed else exclaimGray) task.taskID,
@@ -295,7 +289,15 @@ taskToTableRow model task =
             -- estimated minutes
             estimatedMinutesSelector task,
             br [] [],
-            text "(Minutes)"
+            text "(Minutes)",
+            br [] [],
+
+            -- delete button
+            button [buttonStyle,
+                onClick (DeleteTask task.taskID),
+                class "taskButton"
+            ] [text "Delete"]
+
         ],
 
         -- display/edit the task description
