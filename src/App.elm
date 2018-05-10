@@ -5,7 +5,7 @@ import Model exposing (..)
 import Msg exposing (..)
 import View exposing (view)
 import Update exposing (update)
-import LocalStore exposing(updateWithStorage, save)
+import ClarifyPorts exposing(updateWithStorage, save)
 
 
 main: Program (Maybe Model) Model Msg
