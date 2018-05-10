@@ -270,8 +270,10 @@ taskToTableRow model task =
             ] [text "Delete"],
 
             -- important/urgent
-            (if task.important then exclaimRed else exclaimGray) task.taskID,
-            (if task.urgent then fireIcon else waterIcon) task.taskID,
+            div [style [("width", "100%"), ("height", "100%"), ("text-align", "center")]] [
+                (if task.important then exclaimRed else exclaimGray) task.taskID,
+                (if task.urgent then fireIcon else waterIcon) task.taskID
+            ],
 
             -- "View Siblings" button, if on the today page
             if (model.state == "TodayState") then
