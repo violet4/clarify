@@ -42,6 +42,19 @@ update msg model =
 --        LifeGoalsState
         -- bogus update, for triggering events
         Noop -> model ! []
+
+        ToggleSubtaskViewMode ->
+            let
+                wasSubtaskMode = List.member "Subtask Mode" model.settings
+                updatedSettings =
+                    if wasSubtaskMode
+                    -- then remove it..
+                    then List.filter (\s -> s /= "Subtask Mode") model.settings
+                    -- otherwise add it
+                    else "Subtask Mode" :: model.settings
+            in
+                {model|settings=updatedSettings} ! []
+
         ToggleImportance taskId ->
             let
                 tasks = List.map (\t -> if t.taskID == taskId then {t|important=not t.important} else t) model.tasks
@@ -56,12 +69,18 @@ update msg model =
             let
                 newTaskRegister = model.newTaskRegister
                 updatedTaskRegister = {newTaskRegister|parentTaskId=taskID}
+                subtaskMode = List.member "Subtask Mode" model.settings
+                updatedSettings =
+                    if not subtaskMode
+                    then "Subtask Mode" :: model.settings
+                    else model.settings
             in
             {model|
                 viewingParentTaskId=taskID,
                 newTaskRegister=updatedTaskRegister,
                 -- this allows us to jump from the today page
-                state="TaskState"
+                state="TaskState",
+                settings=updatedSettings
             } ! [updateViewingParentTaskId taskID]
         TopLevel ->
             {model|viewingParentTaskId= -1} ! [updateViewingParentTaskId -1]

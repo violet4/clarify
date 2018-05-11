@@ -59,7 +59,7 @@ defaultModel = Model
     -- state
     "TodayState"
     -- settings
-    []
+    ["Subtask Mode"]
     -- viewingParentTaskId
     -1
     2 -- version

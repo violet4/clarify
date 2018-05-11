@@ -226,6 +226,9 @@ height100p = style [("height", "100%")]
 
 taskToTableRow: Model -> Task -> Bool -> Html Msg
 taskToTableRow model task completed =
+    let
+        allTasksMode = not (List.member "Subtask Mode" model.settings)
+    in
     tr [] [
 
 
@@ -256,7 +259,10 @@ taskToTableRow model task completed =
 
 
         td [class "taskButtons"] [
-            text (if List.member "Show debug info" model.settings then ((toString task.taskID) ++ " ") else ""),
+            text (
+                if List.member "Show debug info" model.settings
+                then ((toString task.taskID) ++ " (p " ++ (toString task.parentTaskId) ++ ")")
+                else ""),
 
             -- "add/remove from today" button
             (if completed
@@ -294,8 +300,9 @@ taskToTableRow model task completed =
                 (if task.important then importantIcon else notImportantIcon) task.taskID
             ],
 
-            -- "View Siblings" button, if on the today page
-            if (model.state == "TodayState") then
+            -- "View Siblings" button, if on the today page,
+            -- or if showing all tasks on the tasks page
+            if (allTasksMode || model.state == "TodayState") then
                 button [
                     onClick (ViewSubTasks task.parentTaskId),
                     buttonStyle,
@@ -394,16 +401,16 @@ taskListToHtmlTable model tasks completed =
         (List.map (\t -> taskToTableRow model t completed) tasks)
     )
 
-eisenhowerSort: Task -> Int
+eisenhowerSort: Task -> (Int, Int)
 eisenhowerSort task =
-    if task.important then (
+    ((if task.important then (
         if task.urgent then 1
         else 2
     )
     else (
         if task.urgent then 3
         else 4
-    )
+    )), task.taskID)
 
 sortTasks: Model -> List Task -> List Task
 sortTasks model tasks =
@@ -472,17 +479,21 @@ completedView model =
 taskView: Model -> Bool -> Html Msg
 taskView model completed =
     let
+        subtaskMode = List.member "Subtask Mode" model.settings
+        allTasksMode = not subtaskMode
+
         tasks = if not completed then model.tasks else model.completed_tasks
-        tasksFromThisParent =
-            if completed
-            -- don't filter completed tasks
+        tasksFromThisParentIfSubtaskMode =
+            -- don't filter completed tasks or in all-tasks mode
+            if completed || allTasksMode
             then tasks
             else List.filter (\t -> t.parentTaskId == model.viewingParentTaskId) tasks
 
         -- hide tasks from tasks page if it's on the today page (if user preference is set)
-        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) tasksFromThisParent)
+        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) tasksFromThisParentIfSubtaskMode)
         filteredTaskViewTasks = filterTasks taskViewTasks model model.settings
         sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
+
     in
     div [fullSizeStyle] 
         (List.append
@@ -497,20 +508,33 @@ taskView model completed =
                 sortBySelectorButtons model,
                 br [] [],
 
+                -- task mode: all tasks vs parent tasks
+                button [
+                    onClick ToggleSubtaskViewMode,
+                    buttonStyle
+                ] [
+                    text (
+                        if subtaskMode then "Switch to All-Task Mode" else "Switch to Subtask Mode"
+                    )
+                ],
+                br [] [],
+
+
                 -- filter text input
                 text "Filter Tasks: ",
                 taskFilterTextInput,
                 br [] [],
 
-                -- change depth buttons
-                br [] [],
-                button [onClick TopLevel, buttonStyle, width100p] [text "Top Level"],
-                button [onClick UpOneLevel, buttonStyle, width100p] [text "Go up"],
-
                 -- "completed page" warning about not editing tasks
                 (if completed
                 then span [style [("color", "red")]] [text "WARNING: Fields cannot be edited on this page! Only deleted or Un-completed!"]
                 else text ""),
+                br [] [],
+                br [] [],
+
+                -- change depth buttons
+                button [onClick TopLevel, buttonStyle, width100p] [text "Top Level"],
+                button [onClick UpOneLevel, buttonStyle, width100p] [text "Go up"],
 
                 -- list of current tasks
                 taskListToHtmlTable model sortedTaskViewTasks completed
@@ -645,9 +669,9 @@ htmlNavigationBar model = div [] [
         text " ",
         todayLinkButton model,
         text " ",
-        lifeGoalsLinkButton model,
-        text " ",
         completedTabButton model,
+        text " ",
+        lifeGoalsLinkButton model,
         text " ",
         settingsLinkButton model,
         text " ",
