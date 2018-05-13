@@ -503,7 +503,6 @@ taskView model completed =
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
                 br [] [],
-                br [] [],
                 -- sorting buttons
                 sortBySelectorButtons model,
                 br [] [],
@@ -595,19 +594,24 @@ todayView model = div [fullSizeStyle] (
         at_least_one_task = ((List.length model.todayTaskIds) > 0)
         todayTasks = List.filter (\t -> (List.member t.taskID model.todayTaskIds)) model.tasks
         filteredTodayTasks = filterTasks todayTasks model model.settings
+        sortedTaskViewTasks = sortTasks model filteredTodayTasks
+
     in if at_least_one_task
         then ([
             div [] [
                 text "Estimated minutes for displayed tasks: ",
-                tasksEstimatedMinutesSumText filteredTodayTasks,
+                tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text " (",
-                text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum filteredTodayTasks))) / 60)),
+                text (Round.round 2 ((toFloat ((tasksEstimatedMinutesSum sortedTaskViewTasks))) / 60)),
                 text " hours)"
             ],
+            sortBySelectorButtons model,
+            br [] [],
+
             -- filter text input
             text "Filter Tasks: ",
             taskFilterTextInput,
-            taskListToHtmlTable model filteredTodayTasks False
+            taskListToHtmlTable model sortedTaskViewTasks False
         ])
         else [
             text "You don't have any tasks for today!",
