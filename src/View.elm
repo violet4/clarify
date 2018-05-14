@@ -554,9 +554,9 @@ taskView model completed =
                 -- parent tasks
                 (if not completed && subtaskMode && List.length parentTasks > 0
                 then div [] [
-                    inlineBlueH2 "Parent Tasks:",
+                    inlineBlueH2 "Hierarchy above current subtask view:",
                     taskListToHtmlTable model parentTasks completed,
-                    inlineBlueH2 "Current depth subtasks:"
+                    inlineBlueH2 "Subtasks:"
                 ]
                 else text ""),
 
