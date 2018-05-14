@@ -475,6 +475,19 @@ completedView: Model -> Html Msg
 completedView model =
     taskView model True
 
+getParentTasks: List Task -> Int -> List Task
+getParentTasks tasks parentTaskID =
+    let
+        parentTaskInList = List.filter (\t -> t.taskID == parentTaskID) tasks
+    in
+        case List.head parentTaskInList of
+            Nothing -> []
+            Just parentTask ->
+                List.concat [getParentTasks tasks parentTask.parentTaskId, parentTaskInList]
+
+inlineBlueH2 string =
+    h2 [style [("color", "blue"), ("display", "inline")]] [text string]
+
 -- tasks view shows all tasks
 taskView: Model -> Bool -> Html Msg
 taskView model completed =
@@ -483,31 +496,34 @@ taskView model completed =
         allTasksMode = not subtaskMode
 
         tasks = if not completed then model.tasks else model.completed_tasks
-        tasksFromThisParentIfSubtaskMode =
+        subTasksOfThisParentIfSubtaskMode =
             -- don't filter completed tasks or in all-tasks mode
             if completed || allTasksMode
             then tasks
             else List.filter (\t -> t.parentTaskId == model.viewingParentTaskId) tasks
 
         -- hide tasks from tasks page if it's on the today page (if user preference is set)
-        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) tasksFromThisParentIfSubtaskMode)
+        taskViewTasks = (List.filter (\t -> taskTodayMatchesViewState model t) subTasksOfThisParentIfSubtaskMode)
         filteredTaskViewTasks = filterTasks taskViewTasks model model.settings
         sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
+
+        parentTasks = getParentTasks model.tasks model.viewingParentTaskId
 
     in
     div [fullSizeStyle] 
         (List.append
             [
                 -- estimated minutes sum
-                text "Estimated minutes for displayed tasks: ",
+                text "Estimated minutes for displayed tasks (not including visible parent tasks): ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
                 text (" (" ++ (Round.round 2 ((toFloat (tasksEstimatedMinutesSum sortedTaskViewTasks))/60)) ++ " hours)"),
                 br [] [],
+
                 -- sorting buttons
                 sortBySelectorButtons model,
                 br [] [],
 
-                -- task mode: all tasks vs parent tasks
+                -- task mode button (all tasks vs parent tasks)
                 button [
                     onClick ToggleSubtaskViewMode,
                     buttonStyle
@@ -519,7 +535,7 @@ taskView model completed =
                 br [] [],
 
 
-                -- filter text input
+                -- filter tasks (text input)
                 text "Filter Tasks: ",
                 taskFilterTextInput,
                 br [] [],
@@ -531,12 +547,23 @@ taskView model completed =
                 br [] [],
                 br [] [],
 
-                -- change depth buttons
+                -- "go up" buttons
                 button [onClick TopLevel, buttonStyle, width100p] [text "Top Level"],
                 button [onClick UpOneLevel, buttonStyle, width100p] [text "Go up"],
 
+                -- parent tasks
+                (if not completed && subtaskMode && List.length parentTasks > 0
+                then div [] [
+                    inlineBlueH2 "Parent Tasks:",
+                    taskListToHtmlTable model parentTasks completed,
+                    inlineBlueH2 "Current depth subtasks:"
+                ]
+                else text ""),
+
                 -- list of current tasks
-                taskListToHtmlTable model sortedTaskViewTasks completed
+                (if List.length sortedTaskViewTasks > 0
+                then taskListToHtmlTable model sortedTaskViewTasks completed
+                else h2 [style [("color", "blue")]] [text "No tasks at this depth"])
             ]
             -- section to create a new task
             (if completed then [] else
