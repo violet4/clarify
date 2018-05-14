@@ -488,6 +488,8 @@ getParentTasks tasks parentTaskID =
 inlineBlueH2 string =
     h2 [style [("color", "blue"), ("display", "inline")]] [text string]
 
+topLevelButton = button [onClick TopLevel, buttonStyle, width100p] [text "Top Level"]
+
 -- tasks view shows all tasks
 taskView: Model -> Bool -> Html Msg
 taskView model completed =
@@ -508,11 +510,30 @@ taskView model completed =
         sortedTaskViewTasks = sortTasks model filteredTaskViewTasks
 
         parentTasks = getParentTasks model.tasks model.viewingParentTaskId
+        parentTitleStrLength = 20
+        lowestParentTaskTitleSummary =
+            case List.head (List.reverse parentTasks) of
+                Nothing -> ""
+                Just task ->
+                    if String.length task.title > parentTitleStrLength
+                    then (String.slice 0 parentTitleStrLength task.title) ++ "..."
+                    else task.title
 
     in
     div [fullSizeStyle] 
         (List.append
             [
+
+                -- parent tasks
+                (if not completed && subtaskMode && List.length parentTasks > 0
+                then div [] [
+                    topLevelButton,
+                    inlineBlueH2 "Hierarchy above current subtask view:",
+                    taskListToHtmlTable model parentTasks completed,
+                    inlineBlueH2 ("Subtasks of \"" ++ lowestParentTaskTitleSummary ++ "\":")
+                ]
+                else text ""),
+
                 -- estimated minutes sum
                 text "Estimated minutes for displayed tasks (not including visible parent tasks): ",
                 tasksEstimatedMinutesSumText sortedTaskViewTasks,
@@ -521,6 +542,11 @@ taskView model completed =
 
                 -- sorting buttons
                 sortBySelectorButtons model,
+                br [] [],
+
+                -- filter tasks (text input)
+                text "Filter Tasks: ",
+                taskFilterTextInput,
                 br [] [],
 
                 -- task mode button (all tasks vs parent tasks)
@@ -535,11 +561,6 @@ taskView model completed =
                 br [] [],
 
 
-                -- filter tasks (text input)
-                text "Filter Tasks: ",
-                taskFilterTextInput,
-                br [] [],
-
                 -- "completed page" warning about not editing tasks
                 (if completed
                 then span [style [("color", "red")]] [text "WARNING: Fields cannot be edited on this page! Only deleted or Un-completed!"]
@@ -548,17 +569,9 @@ taskView model completed =
                 br [] [],
 
                 -- "go up" buttons
-                button [onClick TopLevel, buttonStyle, width100p] [text "Top Level"],
+                topLevelButton,
                 button [onClick UpOneLevel, buttonStyle, width100p] [text "Go up"],
 
-                -- parent tasks
-                (if not completed && subtaskMode && List.length parentTasks > 0
-                then div [] [
-                    inlineBlueH2 "Hierarchy above current subtask view:",
-                    taskListToHtmlTable model parentTasks completed,
-                    inlineBlueH2 "Subtasks:"
-                ]
-                else text ""),
 
                 -- list of current tasks
                 (if List.length sortedTaskViewTasks > 0
