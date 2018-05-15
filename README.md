@@ -20,6 +20,10 @@ Build the project
 Open index.html in your favorite browser. Unless your favorite browser is IE. Then open it in your second-favorite browser.
 
 ## About
+
+
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/mica5/clarify.svg?columns=all&style=plastic)](https://waffle.io/mica5/clarify)
+
 This project is for the Spring 2018 semester at San Jose State University with Professor Horstmann in CS152 Programming Paradigms.
 
 Project instructions at http://horstmann.com/sjsu/spring2018/cs152/project/index.html
