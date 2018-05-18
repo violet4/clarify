@@ -101,6 +101,15 @@ settingsButton model name helpText =
 settingsView: Model -> Html Msg
 settingsView model =
     div [fullSizeStyle] [
+        text (
+            "There are a total of "
+            ++ (toString (List.length model.tasks))
+            ++ " tasks and "
+            ++ (toString (List.length model.life_goals))
+            ++ " life goals."
+        ),
+        br [] [],
+        br [] [],
         (settingsButton
             model
             "Hide today tasks from tasks page"
