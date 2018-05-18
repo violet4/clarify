@@ -197,10 +197,10 @@ update msg model =
                 updatedNewTask = {newTaskRegister|parentTaskId=model.viewingParentTaskId}
             in
             {model |
---                title: String
---                , complete: Bool
---                , estimatedMinutes: Int
---                , taskID: Int
+                --title: String
+                --, complete: Bool
+                --, estimatedMinutes: Int
+                --, taskID: Int
 
             tasks = List.append model.tasks [updatedNewTask],
             newTaskRegister = createEmptyTask model.taskID 0,

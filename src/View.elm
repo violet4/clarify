@@ -662,19 +662,40 @@ todayView model = div [fullSizeStyle] (
         ]
     )
 
-lifeGoalElement: LifeGoal -> Html Msg
-lifeGoalElement lifeGoal =
+lifeGoalElement: Model -> LifeGoal -> Html Msg
+lifeGoalElement model lifeGoal =
+    let
+        tasks = model.tasks
+        tasksForThisLifeGoal = List.filter (\t -> t.lifeGoalID == lifeGoal.id) tasks
+        numTasksForThisLifeGoal = List.length tasksForThisLifeGoal
+    in
     div [width100p] [
         button [buttonStyle, (onClick (DeleteLifeGoal lifeGoal.id))] [text "Delete"],
         text " ",
-        input [inputStyle, Html.Attributes.defaultValue lifeGoal.title, onInput (UpdateLifeGoalDescription lifeGoal.id)] []
+
+        -- life goal title text field
+        input [
+            inputStyle,
+            Html.Attributes.defaultValue lifeGoal.title,
+            onInput (UpdateLifeGoalDescription lifeGoal.id)
+        ] [],
+
+        text (" (" ++ (toString numTasksForThisLifeGoal) ++ " tasks)")
     ]
 
 lifeGoalsView: Model -> Html Msg
-lifeGoalsView model = div [fullSizeStyle]
+lifeGoalsView model =
+    let
+        lifeGoalElementFn = lifeGoalElement model
+    in
+    div [fullSizeStyle]
     (List.append
-         (List.map lifeGoalElement model.life_goals)
-         [
+
+        -- listing of current life goals
+        (List.map lifeGoalElementFn model.life_goals)
+
+        -- form to create a new life goal
+        [
             br [] [],
             hr [] [],
             br [] [],
@@ -688,12 +709,12 @@ lifeGoalsView model = div [fullSizeStyle]
                     inputStyle,
                     value model.new_life_goal_title,
                     onInput UpdateCreateLifeGoalRegister
-              ] [],
-              br [] [],
-              br [] [],
-              button [buttonStyle, type_ "submit"] [text "Create"]
-           ]]
-     )
+            ] [],
+            br [] [],
+            br [] [],
+            button [buttonStyle, type_ "submit"] [text "Create"]
+        ]]
+    )
 
 
 --navigation: () -> Html msg

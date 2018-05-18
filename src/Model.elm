@@ -51,8 +51,15 @@ type alias Model = {
     tasks: List Task,
     completed_tasks: List Task,
     debug: String,
+
+    -- this lifeGoalID is to store the id of
+    -- the next newly-created life goal
     lifeGoalID: Int,
+
+    -- this taskID is to store the id of
+    -- the next newly-created task
     taskID: Int,
+
     new_life_goal_title: String,
     newTaskRegister: Task,
     state: String,
